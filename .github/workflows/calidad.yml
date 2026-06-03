@@ -1,0 +1,92 @@
+# ============================================================
+# .github/workflows/calidad.yml
+# Workflow de Calidad y Rendimiento
+# Se ejecuta manualmente o en pull requests a main
+# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# ============================================================
+
+name: Calidad y Rendimiento
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+
+  # ----------------------------------------------------------
+  # Job 1: Tests de rendimiento (NF1)
+  # ----------------------------------------------------------
+  rendimiento:
+    name: Tests de Rendimiento
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar tests de rendimiento
+        run: |
+          pytest tests/test_performance.py -v --tb=short
+
+  # ----------------------------------------------------------
+  # Job 2: Analisis estatico con pylint
+  # ----------------------------------------------------------
+  analisis-estatico:
+    name: Analisis Estatico con Pylint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar pylint
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+
+      - name: Ejecutar pylint en los modulos principales
+        run: |
+          pylint models.py exceptions.py analyzer.py reporter.py alerts.py simulator.py data_importer.py data_manager.py --disable=C0114,C0115,C0116,R0903 --fail-under=7.0
+        continue-on-error: true
+
+  # ----------------------------------------------------------
+  # Job 3: Tests de integracion completos
+  # ----------------------------------------------------------
+  integracion:
+    name: Tests de Integracion
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar tests de integracion
+        run: |
+          pytest tests/test_integration.py -v --tb=short

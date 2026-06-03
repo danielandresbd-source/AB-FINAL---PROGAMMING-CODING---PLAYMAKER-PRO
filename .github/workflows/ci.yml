@@ -1,0 +1,112 @@
+# ============================================================
+# .github/workflows/ci.yml
+# Workflow de Integracion Continua (CI)
+# Se ejecuta en cada push y pull request a main y develop
+# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# ============================================================
+
+name: Integracion Continua
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - "feature/**"
+      - "fix/**"
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+
+  # ----------------------------------------------------------
+  # Job 1: Ejecutar todos los tests y medir cobertura
+  # ----------------------------------------------------------
+  tests:
+    name: Tests y Cobertura
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Descargar el codigo del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Instalar dependencias del proyecto
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar todos los tests con cobertura
+        run: |
+          pytest tests/ -v --cov=. --cov-report=term-missing --cov-report=xml --cov-fail-under=80
+
+      - name: Subir reporte de cobertura como artefacto
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reporte-cobertura-py${{ matrix.python-version }}
+          path: coverage.xml
+
+  # ----------------------------------------------------------
+  # Job 2: Verificar calidad del codigo con flake8
+  # ----------------------------------------------------------
+  calidad-codigo:
+    name: Calidad de Codigo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el codigo del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar herramientas de calidad
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pylint
+
+      - name: Verificar PEP 8 con flake8
+        run: |
+          flake8 . --max-line-length=99 --exclude=venv,__pycache__,.git --statistics
+
+  # ----------------------------------------------------------
+  # Job 3: Verificar que el CLI arranca sin errores
+  # ----------------------------------------------------------
+  verificar-cli:
+    name: Verificar CLI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el codigo del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Verificar que el CLI muestra la ayuda sin errores
+        run: |
+          python cli.py --help
+
+      - name: Verificar que el simulador genera datos correctamente
+        run: |
+          python cli.py simulador generar --jugadas 5
