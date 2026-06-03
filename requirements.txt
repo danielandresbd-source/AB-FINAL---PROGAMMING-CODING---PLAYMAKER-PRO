@@ -1,0 +1,13 @@
+# Dependencias principales del proyecto PlayMaker Pro
+pandas==2.2.2
+numpy==1.26.4
+
+# Herramientas de testing y cobertura
+pytest==7.4.0
+pytest-cov==4.1.0
+pytest-benchmark==4.0.0
+
+# Herramientas de calidad de codigo
+flake8==7.0.0
+pylint==3.0.0
+black==24.3.0
