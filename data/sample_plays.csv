@@ -1,0 +1,21 @@
+nombre,tipo,formacion,yardas,tasa_exito,down_distance,hash_position,descripcion,etiquetas
+HB Dive Left,run,I_FORMATION,4.5,0.68,2nd&short,middle,Entrega al running back que corre por el hueco A izquierdo,short_yardage;power_run
+Shotgun Slant Right,pass,SHOTGUN,8.0,0.72,3rd&medium,left,Pase corto al receptor en ruta slant hacia la derecha,quick_pass;third_down
+Counter Right,run,SINGLEBACK,3.5,0.62,1st&10,right,Jugada de engano al linebackers con el running back yendo a la derecha,power_run
+Four Verticals,pass,GUN_TRIPS,18.0,0.41,1st&10,middle,Los cuatro receptores corren rutas verticales para abrir el campo,deep_ball
+QB Power Sneak,run,I_FORMATION,1.2,0.81,4th&short,middle,El quarterback sigue a su linea ofensiva en una jugada de fuerza corta,short_yardage;goal_line
+Screen Pass Left,pass,SHOTGUN,7.5,0.74,2nd&long,left,Pase de pantalla al running back con bloqueadores por delante,screen;quick_pass
+Inside Zone Run,run,PISTOL,5.0,0.65,1st&10,middle,Corrida por la zona interior siguiendo los bloqueos de la linea,power_run
+Corner Route Deep,pass,EMPTY_SET,22.0,0.38,1st&10,right,Ruta de esquina profunda al receptor en el lado derecho del campo,deep_ball
+Halfback Toss Left,run,SINGLEBACK,6.0,0.60,2nd&medium,left,Pase lateral al running back que corre por el exterior izquierdo,play_action
+Post Route Cross,pass,SHOTGUN,14.0,0.55,2nd&long,middle,Receptor corre hacia el interior del campo en ruta post,two_minute_drill
+Draw Play,run,SHOTGUN,4.0,0.58,3rd&long,middle,Jugada de engano que simula pase pero termina en corrida del RB,trick_play
+Fade Route Red Zone,pass,SHOTGUN,6.0,0.63,3rd&goal,right,Ruta de alejamiento en la zona roja hacia la esquina de la end zone,red_zone;goal_line
+Power I Formation,run,I_FORMATION,3.8,0.70,4th&short,middle,Corrida de poder desde la formacion I con el fullback de bloqueador,power_run;short_yardage
+Quick Slant Left,pass,GUN_TRIPS,6.5,0.77,3rd&short,left,Pase rapido al receptor en ruta slant izquierda antes de que llegue la presion,quick_pass;third_down
+Play Action Deep,pass,PISTOL,20.0,0.44,1st&10,middle,Finta de corrida seguida de pase profundo al tight end,play_action;deep_ball
+Wildcat Run,run,WILDCAT,5.5,0.64,2nd&short,right,El receptor o running back recibe el snap directamente y corre,trick_play
+Sweep Left,run,SINGLEBACK,7.0,0.56,1st&10,left,Corrida exterior amplia hacia la izquierda con bloqueadores en movimiento,
+Out Route Short,pass,SHOTGUN,5.0,0.71,2nd&short,right,Ruta corta hacia el exterior del campo para yardas seguras,quick_pass;two_minute_drill
+Option Left,run,PISTOL,4.5,0.59,2nd&medium,left,Opcion entre el QB y el RB segun la reaccion del defensive end,
+Red Zone Fade,pass,SHOTGUN,4.0,0.66,1st&goal,right,Fade hacia la esquina de la end zone en zona roja,red_zone
