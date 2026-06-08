@@ -1,12 +1,12 @@
 # Plan de Testing — PlayMaker Pro
 
-**Proyecto:** AB Final — Programming & Coding | MSMK University College 2025–2026
+
 
 ---
 
 ## Estrategia General
 
-El testing se realiza en paralelo con el desarrollo. Cada funcion implementada tiene su test antes de pasar a la siguiente. El objetivo minimo es un 80% de cobertura con al menos 20 casos de test documentados.
+El testing se realiza en paralelo con el desarrollo. Cada funcion implementada tiene su test antes de pasar a la siguiente funcionalidad. El objetivo minimo es un 80% de cobertura con al menos 20 casos de test documentados.
 
 **Este plan incluye 25 casos de test.**
 
@@ -15,7 +15,7 @@ El testing se realiza en paralelo con el desarrollo. Cada funcion implementada t
 ## Tipos de Tests
 
 | Tipo | Que verifica | Archivos |
-|---|---|---|
+
 | Unitario | Comportamiento de una sola funcion en aislamiento | `test_data_importer.py`, `test_data_manager.py`, `test_analyzer.py`, `test_reporter.py`, `test_alerts.py`, `test_simulator.py` |
 | Integracion | Que los modulos funcionan correctamente en conjunto | `test_integration.py` |
 | Rendimiento | Que el sistema cumple NF1 (10K jugadas en menos de 3s) | `test_performance.py` |
@@ -25,7 +25,7 @@ El testing se realiza en paralelo con el desarrollo. Cada funcion implementada t
 ## Tabla Completa de Casos de Test
 
 | ID | Modulo | Funcion | Tipo | Escenario | Resultado Esperado | Estado |
-|---|---|---|---|---|---|---|
+
 | T01 | data_importer | `cargar_csv()` | Unitario | CSV valido con 10 jugadas | Lista de 10 objetos Play | Implementado |
 | T02 | data_importer | `cargar_csv()` | Limite | CSV con solo cabeceras | Lista vacia `[]` | Implementado |
 | T03 | data_importer | `cargar_csv()` | Error | Archivo no encontrado | `FileNotFoundError` capturada | Implementado |
@@ -95,7 +95,7 @@ pytest tests/ --cov=. --cov-report=html
 | Requisito | Meta | Como se verifica |
 |---|---|---|
 | Cobertura minima | 80% por modulo | `pytest --cov=. --cov-fail-under=80` |
-| Numero de tests | Minimo 20 (este plan tiene 25) | Contar en la tabla |
+| Numero de tests | Minimo 20  | Contar en la tabla |
 | Todos los tests pasan | 0 tests fallidos | `pytest tests/ -v` |
 | Rendimiento NF1 | 10K jugadas en menos de 3s | T25 en `test_performance.py` |
 | PEP 8 | Sin errores de estilo | `flake8 .` |

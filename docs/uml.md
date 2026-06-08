@@ -7,32 +7,32 @@
 ## Diagrama de Clases
 
 ```
-+-----------------------------+        +----------------------------------+
+ -----------------------------          ----------------------------------
 |           Play              |        |           Playbook               |
-+-----------------------------+  1..*  +----------------------------------+
+ -----------------------------   1      ----------------------------------
 | - id: str                   |<-------| - id: str                        |
 | - nombre: str               |        | - nombre: str                    |
 | - tipo: PlayType (enum)     |        | - tipo_ofensa: str               |
 | - formacion: Formation(enum)|        | - jugadas: list[Play]            |
 | - descripcion: str          |        | - creado_en: str (ISO datetime)  |
 | - yardas: float             |        | - actualizado_en: str            |
-| - tasa_exito: float         |        +----------------------------------+
+| - tasa_exito: float         |         ----------------------------------
 | - down_distance: str        |        | + anadir_jugada(jugada): None    |
 | - hash_position: str        |        | + eliminar_jugada(id): None      |
 | - etiquetas: list[str]      |        | + obtener_jugada(id): Play       |
 | - creada_en: str            |        | + a_diccionario(): dict          |
-+-----------------------------+        | + desde_diccionario(d): Playbook |
-| + validar(): bool           |        +----------------------------------+
+ -----------------------------         | + desde_diccionario(d): Playbook |
+| + validar(): bool           |         ----------------------------------
 | + es_anomala(): bool        |
 | + a_diccionario(): dict     |
 | + desde_diccionario(): Play |
-+-----------------------------+
+ -----------------------------
               |
               | usa
               v
-+-----------------------------+
+ -----------------------------
 |      Formation (Enum)       |
-+-----------------------------+
+ -----------------------------
 | SHOTGUN                     |
 | I_FORMATION                 |
 | SINGLEBACK                  |
@@ -44,53 +44,53 @@
 | THREE_FOUR                  |
 | NICKEL                      |
 | DIME                        |
-+-----------------------------+
+ -----------------------------
 
-+-----------------------------+
+ -----------------------------
 |       PlayType (Enum)       |
-+-----------------------------+
+ -----------------------------
 | CORRIDA = "run"             |
 | PASE = "pass"               |
 | ESPECIALES = "special_teams"|
-+-----------------------------+
+ -----------------------------
 
 
-+----------------------------------+      +----------------------------------+
+ ----------------------------------        ----------------------------------
 |         TrendAnalyzer            |      |          AlertEngine             |
 |       (en analyzer.py)           |      |        (en alerts.py)            |
-+----------------------------------+      +----------------------------------+
+ ----------------------------------        ----------------------------------
 | Funciones:                       |      | - _registro_alertas: list[str]   |
 | + calcular_estadisticas()        |      | - _reglas_jugada: list[Callable] |
-| + detectar_anomalias()           |      +----------------------------------+
+| + detectar_anomalias()           |       ----------------------------------
 | + predecir_efectividad()         |      | + evaluar_jugada(jugada)         |
 | + obtener_resumen_tendencias()   |      | + verificar_playbook(playbook)   |
-+----------------------------------+      | + obtener_alertas()              |
+ ----------------------------------       | + obtener_alertas()              |
                                           | + limpiar_registro()             |
-                                          +----------------------------------+
+                                           ----------------------------------
 
 
-+----------------------------------+      +----------------------------------+
+ ----------------------------------        ----------------------------------
 |       DataImporter               |      |         Reporter                 |
 |     (en data_importer.py)        |      |       (en reporter.py)           |
-+----------------------------------+      +----------------------------------+
+ ----------------------------------        ----------------------------------
 | Funciones:                       |      | Funciones:                       |
 | + cargar_csv(ruta)               |      | + exportar_csv(jugadas)          |
 | + sanitizar_datos(jugadas)       |      | + exportar_estadisticas_csv()    |
-+----------------------------------+      | + mostrar_grafico_ascii()        |
+ ----------------------------------       | + mostrar_grafico_ascii()        |
                                           | + mostrar_top_jugadas()          |
-                                          +----------------------------------+
+                                           ----------------------------------
 
 
-+----------------------------------+
+ ----------------------------------
 |          Simulator               |
 |        (en simulator.py)         |
-+----------------------------------+
+ ---------------------------------- 
 | Funciones:                       |
 | + generar_jugadas(cantidad)      |
 | + generar_playbooks(num, cant)   |
 | + guardar_dataset_json()         |
 | + guardar_dataset_csv()          |
-+----------------------------------+
+ ----------------------------------
 ```
 
 ---
@@ -99,7 +99,7 @@
 
 | Relacion | Descripcion |
 |---|---|
-| `Playbook` contiene `Play` (1..*) | Un playbook tiene una o mas jugadas |
+| `Playbook` contiene `Play` (1) | Un playbook tiene una o mas jugadas |
 | `Play` usa `Formation` (enum) | Cada jugada referencia una formacion valida |
 | `Play` usa `PlayType` (enum) | Cada jugada tiene un tipo definido por el enum |
 | `MotorAlertas` evalua `Play` y `Playbook` | El motor de alertas recibe objetos del dominio |

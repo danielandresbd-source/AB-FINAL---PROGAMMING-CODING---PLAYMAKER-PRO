@@ -2,7 +2,7 @@
 # tests/test_simulator.py
 # Tests unitarios para simulator.py (RF10)
 # Cubre los casos T20, T21 del plan de testing
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import os
@@ -16,7 +16,7 @@ import simulator
 from models import Formation, PlayType
 
 
-# --- Tests T20: Generacion de jugadas sinteticas ---
+# Tests T20: Generacion de jugadas sinteticas
 
 class TestGenerarJugadas:
     """Tests para la funcion generar_jugadas del modulo simulator."""
@@ -87,7 +87,7 @@ class TestGenerarJugadas:
         assert len(set(ids)) == len(ids)
 
 
-# --- Tests T21: Casos limite del simulador ---
+# Tests T21: Casos limite del simulador
 
 class TestGenerarJugadasLimite:
     """Tests para casos limite de la generacion de datos sinteticos."""

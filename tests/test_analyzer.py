@@ -2,7 +2,7 @@
 # tests/test_analyzer.py
 # Tests unitarios para analyzer.py (RF3, RF4, RF7)
 # Cubre los casos T11, T12, T13, T14, T15 del plan de testing
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding 
 # ============================================================
 
 import os
@@ -16,7 +16,7 @@ import analyzer
 from models import Play
 
 
-# --- Funcion de ayuda para crear jugadas de prueba ---
+# Funcion de ayuda para crear jugadas de prueba 
 
 def crear_jugada(nombre="Test Play", tipo="run", formacion="SHOTGUN",
                  yardas=5.0, tasa_exito=0.65, down_distance="1st&10",
@@ -55,7 +55,7 @@ def crear_dataset_10_jugadas():
     return jugadas
 
 
-# --- Tests T11: Estadisticas descriptivas ---
+# Tests T11: Estadisticas descriptivas
 
 class TestCalcularEstadisticas:
     """Tests para la funcion calcular_estadisticas del modulo analyzer."""
@@ -110,7 +110,7 @@ class TestCalcularEstadisticas:
         assert resultado == {}
 
 
-# --- Tests T12: Deteccion de anomalias ---
+# Tests T12: Deteccion de anomalias
 
 class TestDetectarAnomalias:
     """Tests para la funcion detectar_anomalias del modulo analyzer."""
@@ -175,7 +175,7 @@ class TestDetectarAnomalias:
         assert nombres_anomalos.count("HB Dive") == 2
 
 
-# --- Tests T13: Anomalias con un solo registro ---
+# Tests T13: Anomalias con un solo registro
 
 class TestDetectarAnomaliasDatosInsuficientes:
     """Tests para deteccion de anomalias con pocos datos."""
@@ -204,7 +204,7 @@ class TestDetectarAnomaliasDatosInsuficientes:
         assert anomalias == []
 
 
-# --- Tests T14: Prediccion de efectividad ---
+# Tests T14: Prediccion de efectividad
 
 class TestPredecirEfectividad:
     """Tests para la funcion predecir_efectividad del modulo analyzer."""
@@ -251,7 +251,7 @@ class TestPredecirEfectividad:
         assert resultado["tendencia"] in tendencias_validas
 
 
-# --- Tests T15: Prediccion con pocos registros ---
+# Tests T15: Prediccion con pocos registros 
 
 class TestPredecirEfectividadError:
     """Tests para errores en la prediccion por falta de datos."""

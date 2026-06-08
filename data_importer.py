@@ -1,7 +1,7 @@
 # ============================================================
 # data_importer.py
 # RF1: Importacion y validacion de jugadas desde archivos CSV
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding 
 # ============================================================
 
 import csv

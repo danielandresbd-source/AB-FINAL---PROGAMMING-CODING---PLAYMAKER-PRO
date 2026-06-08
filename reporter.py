@@ -2,7 +2,7 @@
 # reporter.py
 # RF5: Exportacion de reportes a CSV
 # RF9: Graficos de barras ASCII en consola
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import csv

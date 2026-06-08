@@ -2,7 +2,7 @@
 # tests/test_data_importer.py
 # Tests unitarios para data_importer.py (RF1)
 # Cubre los casos T01, T02, T03, T04, T05 del plan de testing
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding 
 # ============================================================
 
 import csv
@@ -19,7 +19,7 @@ import data_importer
 from exceptions import ArchivoCsvError, ValidationError
 
 
-# --- Funciones de ayuda para los tests ---
+# Funciones de ayuda para los tests
 
 def crear_csv_temporal(contenido, encoding="utf-8"):
     """
@@ -44,7 +44,7 @@ def eliminar_archivo(ruta):
         os.unlink(ruta)
 
 
-# --- Tests T01: CSV valido ---
+# Tests T01: CSV valido
 
 class TestCargarCsvValido:
     """Tests para cargar un CSV con datos correctos."""
@@ -102,7 +102,7 @@ class TestCargarCsvValido:
             eliminar_archivo(ruta)
 
 
-# --- Tests T02: CSV vacio ---
+# Tests T02: CSV vacio 
 
 class TestCargarCsvVacio:
     """Tests para cargar un CSV que no tiene jugadas."""
@@ -123,7 +123,7 @@ class TestCargarCsvVacio:
             eliminar_archivo(ruta)
 
 
-# --- Tests T03: Archivo no encontrado ---
+# Tests T03: Archivo no encontrado
 
 class TestArchivoNoEncontrado:
     """Tests para cuando el archivo CSV no existe."""
@@ -149,7 +149,7 @@ class TestArchivoNoEncontrado:
         assert ruta_inexistente in str(info_error.value)
 
 
-# --- Tests T04: Fila con datos invalidos ---
+# Tests T04: Fila con datos invalidos
 
 class TestValidarFilaConErrores:
     """Tests para filas con datos incorrectos en el CSV."""
@@ -196,7 +196,7 @@ class TestValidarFilaConErrores:
             eliminar_archivo(ruta)
 
 
-# --- Tests T05: Columnas extra ---
+# Tests T05: Columnas extra
 
 class TestSanitizarDatos:
     """Tests para la sanitizacion de datos importados."""

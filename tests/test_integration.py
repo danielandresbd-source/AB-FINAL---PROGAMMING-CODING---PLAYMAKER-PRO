@@ -2,7 +2,7 @@
 # tests/test_integration.py
 # Tests de integracion entre modulos (T22, T23, T24)
 # Verifica que los modulos funcionan correctamente en conjunto
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding 
 # ============================================================
 
 import csv
@@ -23,7 +23,7 @@ import simulator
 from models import Play
 
 
-# --- Configuracion de los tests de integracion ---
+# Configuracion de los tests de integracion
 
 @pytest.fixture(autouse=True)
 def usar_archivos_temporales(tmp_path, monkeypatch):
@@ -47,7 +47,7 @@ def usar_archivos_temporales(tmp_path, monkeypatch):
     monkeypatch.setattr(reporter, "DIRECTORIO_EXPORTACIONES", str(directorio_exports))
 
 
-# --- Funcion de ayuda para crear CSV temporal ---
+# Funcion de ayuda para crear CSV temporal
 
 def crear_csv_con_jugadas(tmp_path, cantidad=10):
     """Crea un archivo CSV temporal con jugadas de muestra."""
@@ -78,7 +78,7 @@ def crear_csv_con_jugadas(tmp_path, cantidad=10):
     return ruta_csv
 
 
-# --- Test T22: Pipeline completo CSV -> Analisis -> Exportar ---
+# Test T22: Pipeline completo CSV -> Analisis -> Exportar
 
 class TestPipelineImportarAnalizarExportar:
     """
@@ -144,7 +144,7 @@ class TestPipelineImportarAnalizarExportar:
         assert "Jugada Outlier" in nombres
 
 
-# --- Test T23: Crear playbook -> Añadir jugada -> Detectar anomalias ---
+# Test T23: Crear playbook -> Añadir jugada -> Detectar anomalias
 
 class TestPipelinePlaybookAnomalias:
     """
@@ -231,7 +231,7 @@ class TestPipelinePlaybookAnomalias:
             data_manager.obtener_playbook(pb.id)
 
 
-# --- Test T24: Simular -> Importar -> Predecir ---
+# Test T24: Simular -> Importar -> Predecir
 
 class TestPipelineSimularPredecir:
     """

@@ -1,7 +1,7 @@
 # ============================================================
 # data_manager.py
 # RF2: CRUD de Playbooks y Jugadas con persistencia en JSON
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import json

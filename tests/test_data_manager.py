@@ -2,7 +2,7 @@
 # tests/test_data_manager.py
 # Tests unitarios para data_manager.py (RF2)
 # Cubre los casos T06, T07, T08, T09, T10 del plan de testing
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import json
@@ -19,7 +19,7 @@ from exceptions import PlaybookNotFoundError, PlayNotFoundError, ValidationError
 from models import Play, Playbook
 
 
-# --- Configuracion de los tests ---
+# Configuracion de los tests
 
 @pytest.fixture(autouse=True)
 def usar_json_temporal(tmp_path, monkeypatch):
@@ -39,7 +39,7 @@ def usar_json_temporal(tmp_path, monkeypatch):
     monkeypatch.setattr(data_manager, "RUTA_JSON", ruta_temporal)
 
 
-# --- Tests T06: Crear playbook ---
+# Tests T06: Crear playbook
 
 class TestCrearPlaybook:
     """Tests para la creacion de playbooks."""
@@ -70,7 +70,7 @@ class TestCrearPlaybook:
         assert playbook_recuperado.nombre == "Test Playbook"
 
 
-# --- Tests T07: Crear playbook con datos invalidos ---
+# Tests T07: Crear playbook con datos invalidos
 
 class TestCrearPlaybookInvalido:
     """Tests para validacion al crear playbooks."""
@@ -92,7 +92,7 @@ class TestCrearPlaybookInvalido:
             data_manager.crear_playbook(nombre="   ")
 
 
-# --- Tests T08: Actualizar jugada ---
+# Tests T08: Actualizar jugada
 
 class TestActualizarJugada:
     """Tests para la actualizacion de jugadas."""
@@ -145,7 +145,7 @@ class TestActualizarJugada:
         assert jugada_recuperada.yardas == 10.0
 
 
-# --- Tests T09: Eliminar playbook con ID inexistente ---
+# Tests T09: Eliminar playbook con ID inexistente
 
 class TestEliminarPlaybookInexistente:
     """Tests para eliminar playbooks que no existen."""
@@ -171,7 +171,7 @@ class TestEliminarPlaybookInexistente:
             data_manager.obtener_playbook("pb_999999")
 
 
-# --- Tests T10: Obtener jugada por ID ---
+# Tests T10: Obtener jugada por ID
 
 class TestObtenerJugada:
     """Tests para obtener jugadas especificas."""
