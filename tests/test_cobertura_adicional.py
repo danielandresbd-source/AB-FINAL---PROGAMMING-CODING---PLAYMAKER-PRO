@@ -5,13 +5,13 @@
 # Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
 # ============================================================
 
-import json
+
 import os
 import sys
 
 import pytest
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 
 import analyzer
 import data_manager
