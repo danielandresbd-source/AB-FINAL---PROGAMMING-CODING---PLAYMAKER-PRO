@@ -9,10 +9,9 @@ import json
 import logging
 import os
 import random
-import uuid
 from datetime import datetime, timedelta
 
-from models import Formation, Play, Playbook, PlayType
+from models import Formation, Play, Playbook
 
 logger = logging.getLogger(__name__)
 
