@@ -235,7 +235,8 @@ def sanitizar_datos(jugadas):
             )
 
     logger.info(
-        f"Sanitizacion completada: {len(jugadas_validas)} jugadas validas de {len(jugadas)} totales."
+        f"Sanitizacion completada: {len(jugadas_validas)} jugadas validas "
+        f"de {len(jugadas)} totales."
     )
 
     return jugadas_validas
