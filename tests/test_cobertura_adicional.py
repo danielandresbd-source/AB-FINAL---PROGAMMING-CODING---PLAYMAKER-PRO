@@ -11,8 +11,6 @@ import sys
 
 import pytest
 
-
-
 import analyzer
 import data_manager
 import reporter
