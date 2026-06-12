@@ -5,16 +5,8 @@
 # Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
 # ============================================================
 
-import os
-import sys
-
-import pytest
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 from alerts import MotorAlertas
 from models import Play, Playbook
-
 
 # --- Funcion de ayuda ---
 
@@ -30,7 +22,6 @@ def crear_jugada_valida(nombre="Jugada Valida"):
         down_distance="1st&10",
         hash_position="middle",
     )
-
 
 # --- Tests T18: Alerta por formacion invalida ---
 
@@ -110,7 +101,6 @@ class TestEvaluarJugada:
 
         assert len(alertas) > 0
 
-
 # --- Tests T19: Alerta por capacidad del playbook ---
 
 class TestVerificarPlaybook:
@@ -137,7 +127,11 @@ class TestVerificarPlaybook:
         # Debe haber al menos una alerta de capacidad
         assert len(alertas) > 0
         alerta_texto = " ".join(alertas)
-        assert "50" in alerta_texto or "limite" in alerta_texto.lower() or "lleno" in alerta_texto.lower()
+        assert (
+            "50" in alerta_texto
+            or "limite" in alerta_texto.lower()
+            or "lleno" in alerta_texto.lower()
+        )
 
     def test_T19_playbook_con_nombres_duplicados_genera_alerta(self):
         """

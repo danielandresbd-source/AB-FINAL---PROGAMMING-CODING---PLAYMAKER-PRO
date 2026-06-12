@@ -6,15 +6,8 @@
 # ============================================================
 
 import os
-import sys
-
-import pytest
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 import simulator
 from models import Formation, PlayType
-
 
 # --- Tests T20: Generacion de jugadas sinteticas ---
 
@@ -85,7 +78,6 @@ class TestGenerarJugadas:
         ids = [j.id for j in jugadas]
         # Si los IDs son unicos, al convertirlos a set no pierde elementos
         assert len(set(ids)) == len(ids)
-
 
 # --- Tests T21: Casos limite del simulador ---
 
