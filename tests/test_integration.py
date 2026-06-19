@@ -6,14 +6,9 @@
 # ============================================================
 
 import csv
-import json
 import os
-import sys
-import tempfile
 
 import pytest
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import analyzer
 import data_importer
@@ -22,8 +17,7 @@ import reporter
 import simulator
 from models import Play
 
-
-# Configuracion de los tests de integracion
+# --- Configuracion de los tests de integracion ---
 
 @pytest.fixture(autouse=True)
 def usar_archivos_temporales(tmp_path, monkeypatch):
@@ -46,8 +40,7 @@ def usar_archivos_temporales(tmp_path, monkeypatch):
     # Redirigir reporter al directorio de exports temporal
     monkeypatch.setattr(reporter, "DIRECTORIO_EXPORTACIONES", str(directorio_exports))
 
-
-# Funcion de ayuda para crear CSV temporal
+# --- Funcion de ayuda para crear CSV temporal ---
 
 def crear_csv_con_jugadas(tmp_path, cantidad=10):
     """Crea un archivo CSV temporal con jugadas de muestra."""
@@ -77,8 +70,7 @@ def crear_csv_con_jugadas(tmp_path, cantidad=10):
 
     return ruta_csv
 
-
-# Test T22: Pipeline completo CSV -> Analisis -> Exportar
+# --- Test T22: Pipeline completo CSV -> Analisis -> Exportar ---
 
 class TestPipelineImportarAnalizarExportar:
     """
@@ -143,8 +135,7 @@ class TestPipelineImportarAnalizarExportar:
         nombres = [a["jugada"].nombre for a in anomalias]
         assert "Jugada Outlier" in nombres
 
-
-# Test T23: Crear playbook -> Añadir jugada -> Detectar anomalias
+# --- Test T23: Crear playbook -> Añadir jugada -> Detectar anomalias ---
 
 class TestPipelinePlaybookAnomalias:
     """
@@ -230,8 +221,7 @@ class TestPipelinePlaybookAnomalias:
         with pytest.raises(PlaybookNotFoundError):
             data_manager.obtener_playbook(pb.id)
 
-
-# Test T24: Simular -> Importar -> Predecir
+# --- Test T24: Simular -> Importar -> Predecir ---
 
 class TestPipelineSimularPredecir:
     """

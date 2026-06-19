@@ -5,19 +5,11 @@
 # Proyecto: AB Final - Programming & Coding
 # ============================================================
 
-import json
-import os
-import sys
-import tempfile
-
 import pytest
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 import data_manager
-from exceptions import PlaybookNotFoundError, PlayNotFoundError, ValidationError
-from models import Play, Playbook
-
+from exceptions import PlaybookNotFoundError, ValidationError
+from models import Play
 
 # Configuracion de los tests
 
@@ -38,8 +30,7 @@ def usar_json_temporal(tmp_path, monkeypatch):
     ruta_temporal = str(directorio_data / "playbooks.json")
     monkeypatch.setattr(data_manager, "RUTA_JSON", ruta_temporal)
 
-
-# Tests T06: Crear playbook
+# --- Tests T06: Crear playbook ---
 
 class TestCrearPlaybook:
     """Tests para la creacion de playbooks."""
@@ -69,8 +60,7 @@ class TestCrearPlaybook:
 
         assert playbook_recuperado.nombre == "Test Playbook"
 
-
-# Tests T07: Crear playbook con datos invalidos
+# --- Tests T07: Crear playbook con datos invalidos ---
 
 class TestCrearPlaybookInvalido:
     """Tests para validacion al crear playbooks."""
@@ -91,8 +81,7 @@ class TestCrearPlaybookInvalido:
         with pytest.raises(ValidationError):
             data_manager.crear_playbook(nombre="   ")
 
-
-# Tests T08: Actualizar jugada
+# --- Tests T08: Actualizar jugada ---
 
 class TestActualizarJugada:
     """Tests para la actualizacion de jugadas."""
@@ -144,8 +133,7 @@ class TestActualizarJugada:
 
         assert jugada_recuperada.yardas == 10.0
 
-
-# Tests T09: Eliminar playbook con ID inexistente
+# --- Tests T09: Eliminar playbook con ID inexistente ---
 
 class TestEliminarPlaybookInexistente:
     """Tests para eliminar playbooks que no existen."""
@@ -170,8 +158,7 @@ class TestEliminarPlaybookInexistente:
         with pytest.raises(PlaybookNotFoundError):
             data_manager.obtener_playbook("pb_999999")
 
-
-# Tests T10: Obtener jugada por ID
+# --- Tests T10: Obtener jugada por ID ---
 
 class TestObtenerJugada:
     """Tests para obtener jugadas especificas."""

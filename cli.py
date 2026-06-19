@@ -5,20 +5,12 @@
 # Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
 # ============================================================
 
+# Importaciones de la libreria estandar de Python
 import argparse
 import logging
 import sys
 
-# Configurar el sistema de registro de eventos antes de importar modulos
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-    ],
-)
-
-# Importar los modulos del proyecto
+# Importaciones de los modulos del proyecto
 import alerts
 import analyzer
 import data_importer
@@ -32,7 +24,16 @@ from exceptions import (
     PlayNotFoundError,
     ValidationError,
 )
-from models import Formation, Play, PlayType
+from models import Play
+
+# Configurar el sistema de registro de eventos
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+    ],
+)
 
 # Desactivar los logs en la salida normal del CLI para no mezclarlos con la UI
 logging.disable(logging.CRITICAL)

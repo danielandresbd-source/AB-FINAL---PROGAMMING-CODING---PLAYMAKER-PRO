@@ -9,8 +9,8 @@ import logging
 import os
 from datetime import datetime
 
-from exceptions import PlaybookNotFoundError, PlayNotFoundError, ValidationError
-from models import Play, Playbook
+from exceptions import PlaybookNotFoundError, ValidationError
+from models import Playbook
 
 # Configuracion del sistema de registro de eventos
 logger = logging.getLogger(__name__)
