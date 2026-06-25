@@ -5,18 +5,18 @@
 # Proyecto: AB Final - Programming & Coding
 # ============================================================
 
-import json
+
 import os
 import sys
-import tempfile
+
 
 import pytest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import data_manager
-from exceptions import PlaybookNotFoundError, PlayNotFoundError, ValidationError
-from models import Play, Playbook
+from exceptions import PlaybookNotFoundError, ValidationError
+from models import Play
 
 
 # Configuracion de los tests

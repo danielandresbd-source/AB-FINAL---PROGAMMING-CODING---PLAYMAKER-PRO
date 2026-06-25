@@ -8,7 +8,6 @@
 import os
 import sys
 
-import pytest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -137,7 +136,11 @@ class TestVerificarPlaybook:
         # Debe haber al menos una alerta de capacidad
         assert len(alertas) > 0
         alerta_texto = " ".join(alertas)
-        assert "50" in alerta_texto or "limite" in alerta_texto.lower() or "lleno" in alerta_texto.lower()
+        assert (
+            "50" in alerta_texto
+            or "limite" in alerta_texto.lower()
+            or "lleno" in alerta_texto.lower()
+        )
 
     def test_T19_playbook_con_nombres_duplicados_genera_alerta(self):
         """

@@ -29,11 +29,10 @@ from exceptions import (
     ArchivoCsvError,
     PlaybookFullError,
     PlaybookNotFoundError,
-    PlayMakerError,
     PlayNotFoundError,
     ValidationError,
 )
-from models import Formation, Play, PlayType
+from models import Play
 
 # Desactivar los logs en la salida normal del CLI para no mezclarlos con la UI
 logging.disable(logging.CRITICAL)
