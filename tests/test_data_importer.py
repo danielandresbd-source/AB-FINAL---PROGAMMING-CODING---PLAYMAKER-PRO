@@ -2,7 +2,7 @@
 # tests/test_data_importer.py
 # Tests unitarios para data_importer.py (RF1)
 # Cubre los casos T01, T02, T03, T04, T05 del plan de testing
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding 
 # ============================================================
 
 import tempfile
@@ -14,7 +14,7 @@ import pytest
 
 import data_importer
 
-# --- Funciones de ayuda para los tests ---
+# Funciones de ayuda para los tests
 
 def crear_csv_temporal(contenido, encoding="utf-8"):
     """

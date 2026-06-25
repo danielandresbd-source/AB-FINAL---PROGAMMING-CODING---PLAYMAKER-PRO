@@ -2,7 +2,7 @@
 # tests/test_integration.py
 # Tests de integracion entre modulos (T22, T23, T24)
 # Verifica que los modulos funcionan correctamente en conjunto
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding 
 # ============================================================
 
 import csv

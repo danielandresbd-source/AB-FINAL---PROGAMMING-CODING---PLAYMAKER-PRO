@@ -2,7 +2,7 @@
 # tests/test_data_manager.py
 # Tests unitarios para data_manager.py (RF2)
 # Cubre los casos T06, T07, T08, T09, T10 del plan de testing
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import pytest
@@ -11,7 +11,7 @@ import data_manager
 from exceptions import PlaybookNotFoundError, ValidationError
 from models import Play
 
-# --- Configuracion de los tests ---
+# Configuracion de los tests
 
 @pytest.fixture(autouse=True)
 def usar_json_temporal(tmp_path, monkeypatch):

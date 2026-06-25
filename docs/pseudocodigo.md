@@ -1,6 +1,6 @@
 # Pseudocodigo de Algoritmos Principales — PlayMaker Pro
 
-**Proyecto:** AB Final — Programming & Coding | MSMK University College 2025–2026
+
 
 ---
 
@@ -61,7 +61,7 @@ FUNCION detectar_anomalias(jugadas: lista[Play]) -> lista[dict]:
   RETORNAR anomalias
 ```
 
-### Implementacion en Python (archivo `analyzer.py`)
+### Implementacion en Python para el desarollo del proyecto (archivo `analyzer.py`)
 
 ```python
 def detectar_anomalias(jugadas):
@@ -161,7 +161,7 @@ FUNCION predecir_efectividad(jugadas: lista[Play], ventana: int = 5) -> dict:
   }
 ```
 
-### Implementacion en Python (archivo `analyzer.py`)
+### Implementacion en Python para el desarollo del proyecto (archivo `analyzer.py`)
 
 ```python
 def predecir_efectividad(jugadas, ventana=5):
@@ -206,12 +206,12 @@ def predecir_efectividad(jugadas, ventana=5):
 Inicio: python cli.py <comando> <subcomando> [opciones]
                     |
                     v
-          +------------------+
+           ------------------
           |  argparse parsea |
           |  los argumentos  |
-          +------------------+
+           ------------------
                     |
-          +---------+----------+
+            -------------------
           |                    |
     No hay modulo         Si hay modulo
           |                    |
@@ -223,7 +223,7 @@ Inicio: python cli.py <comando> <subcomando> [opciones]
                               |
                    Buscar en tabla de comandos
                               |
-              +--------------+--------------+
+               ----------------------------
               |              |              |
          playbooks        jugadas        analisis
               |              |              |

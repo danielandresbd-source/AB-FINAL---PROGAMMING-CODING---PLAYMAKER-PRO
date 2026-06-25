@@ -2,7 +2,7 @@
 # tests/test_alerts.py
 # Tests unitarios para alerts.py (RF6)
 # Cubre los casos T18, T19 del plan de testing
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding 
 # ============================================================
 
 from alerts import MotorAlertas

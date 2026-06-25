@@ -2,7 +2,7 @@
 # tests/test_reporter.py
 # Tests unitarios para reporter.py (RF5, RF9)
 # Cubre los casos T16, T17 del plan de testing
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import os

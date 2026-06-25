@@ -3,7 +3,7 @@
 # Tests de rendimiento (T25)
 # Verifica que el sistema cumple el requisito NF1:
 # procesar 10.000 jugadas en menos de 3 segundos
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding 
 # ============================================================
 
 import time

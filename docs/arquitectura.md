@@ -1,59 +1,59 @@
 # Arquitectura del Sistema — PlayMaker Pro
 
-**Proyecto:** AB Final — Programming & Coding | MSMK University College 2025–2026
+**Proyecto:** AB Final — Programming & Coding 
 
 ---
 
 ## Vision General
 
-PlayMaker Pro sigue una arquitectura modular en capas. Cada modulo tiene una responsabilidad unica y bien definida. Los modulos no mezclan responsabilidades (por ejemplo, `analyzer.py` nunca escribe archivos, eso lo hace `reporter.py`).
+El proyecto sigue una arquitectura modular en capas. Cada modulo tiene una responsabilidad unica y bien definida.
 
 ---
 
 ## Diagrama de Capas
 
 ```
-+----------------------------------------------------------+
-|                     CAPA DE PRESENTACION                  |
-|                          cli.py                           |
-|          (Interfaz de linea de comandos con argparse)      |
-+----------------------------------------------------------+
+ ----------------------------------------------------------
+|                     CAPA DE PRESENTACION                 |
+|                          cli.py                          |
+|          (Interfaz de linea de comandos con argparse)    |
+ ----------------------------------------------------------
           |              |              |
           v              v              v
-+----------------+ +----------+ +-------------+
+ ----------------   ----------   -------------
 |  data_manager  | | analyzer | |  reporter   |
 |   (RF2: CRUD)  | | (RF3/4/7)| | (RF5/RF9)   |
-+----------------+ +----------+ +-------------+
+ ----------------   ----------   -------------
           |              |              |
           v              v              v
-+----------------------------------------------------------+
-|                    CAPA DE DATOS Y MODELOS                |
-|   models.py (Play, Playbook, Formation, PlayType)         |
-|   exceptions.py (PlayMakerError, ValidationError, ...)    |
-+----------------------------------------------------------+
+ ----------------------------------------------------------
+|                    CAPA DE DATOS Y MODELOS               |
+|   models.py (Play, Playbook, Formation, PlayType)        |
+|   exceptions.py (PlayMakerError, ValidationError, ...)   |
+ ----------------------------------------------------------
           |
           v
-+----------------------------------------------------------+
+ ----------------------------------------------------------
 |                   CAPA DE ENTRADA / SALIDA               |
 |   data_importer.py (RF1)  |  simulator.py (RF10)         |
 |   alerts.py (RF6)                                        |
-+----------------------------------------------------------+
+ ----------------------------------------------------------
           |
           v
-+----------------------------------------------------------+
-|                     ALMACENAMIENTO                        |
+ ----------------------------------------------------------
+|                     ALMACENAMIENTO                       |
 |   data/playbooks.json      |   data/exports/*.csv        |
 |   data/sample_plays.csv    |                             |
-+----------------------------------------------------------+
+ ----------------------------------------------------------
 ```
 
----
 
-## Descripcion de Cada Modulo
+
+## Módulos
 
 ### `models.py` — Modelos de Dominio
 
-Contiene las clases de datos del dominio de futbol americano.
+En este múdlo se contiene las clases de datos del dominio de futbol americano.
 
 **Clases:**
 - `Formation` (Enum): Formaciones validas del sistema (SHOTGUN, I_FORMATION, etc.)
@@ -61,13 +61,13 @@ Contiene las clases de datos del dominio de futbol americano.
 - `Play`: Representa una jugada individual
 - `Playbook`: Representa un libro de jugadas que agrupa varios `Play`
 
-**Patron de diseño:** Value Object + Factory Method (`desde_diccionario`)
+**Patron del diseño utilizado:** Value Object + Factory Method (`desde_diccionario`)
 
 ---
 
 ### `exceptions.py` — Excepciones Personalizadas
 
-Define la jerarquia de excepciones del sistema.
+Este módulo define la jerarquia de excepciones del sistema.
 
 ```
 PlayMakerError (base)
@@ -82,9 +82,9 @@ PlayMakerError (base)
 
 ### `data_importer.py` — Importacion de CSV (RF1)
 
-Responsabilidad: leer un archivo CSV y convertirlo en objetos `Play`.
+Este módulo será el responsable de leer un archivo CSV y convertirlo en objetos `Play`.
 
-**Flujo:**
+**Flujo de trabajo:**
 1. Verificar que el archivo existe
 2. Verificar que tiene las columnas requeridas
 3. Procesar cada fila y validarla
@@ -98,7 +98,7 @@ Responsabilidad: leer un archivo CSV y convertirlo en objetos `Play`.
 
 ### `data_manager.py` — CRUD con JSON (RF2)
 
-Responsabilidad: persistir y recuperar datos en `data/playbooks.json`.
+Este módulo será responsable de persistir y recuperar datos en `data/playbooks.json`.
 
 **Funciones publicas:**
 - `crear_playbook(nombre, tipo_ofensa)` → `Playbook`
@@ -115,7 +115,7 @@ Responsabilidad: persistir y recuperar datos en `data/playbooks.json`.
 
 ### `analyzer.py` — Analisis (RF3, RF4, RF7)
 
-Responsabilidad: calcular metricas, detectar anomalias y predecir tendencias.
+Este módulo será el responsable de calcular metricas, detectar anomalias y predecir tendencias.
 
 **Funciones publicas:**
 - `calcular_estadisticas(jugadas)` → `dict` (RF3)
@@ -123,13 +123,13 @@ Responsabilidad: calcular metricas, detectar anomalias y predecir tendencias.
 - `predecir_efectividad(jugadas, ventana)` → `dict` (RF7)
 - `obtener_resumen_tendencias(jugadas)` → `dict`
 
-**Nota:** Todas las funciones son puras (no tienen efectos secundarios), lo que facilita el testing.
+Todas las funciones son puras (no tienen efectos secundarios), lo que facilita el testing.
 
 ---
 
 ### `reporter.py` — Reportes (RF5, RF9)
 
-Responsabilidad: exportar datos a archivos y generar visualizaciones ASCII.
+Este módulo sera el responsable de exportar datos a archivos y generar visualizaciones ASCII.
 
 **Funciones publicas:**
 - `exportar_csv(jugadas, nombre_archivo)` → `str` (ruta del archivo) (RF5)
@@ -141,7 +141,7 @@ Responsabilidad: exportar datos a archivos y generar visualizaciones ASCII.
 
 ### `alerts.py` — Motor de Alertas (RF6)
 
-Responsabilidad: evaluar jugadas y playbooks en busca de conflictos.
+Este módulo será el responsable de evaluar jugadas y playbooks en busca de conflictos.
 
 **Clase principal:** `MotorAlertas`
 
@@ -162,7 +162,7 @@ Responsabilidad: evaluar jugadas y playbooks en busca de conflictos.
 
 ### `simulator.py` — Simulador (RF10)
 
-Responsabilidad: generar datos sinteticos para testing y demostraciones.
+Este módulo será el responsable de generar datos sinteticos para testing y demostraciones.
 
 **Funciones publicas:**
 - `generar_jugadas(cantidad, tipo_ofensa)` → `list[Play]`
@@ -174,7 +174,7 @@ Responsabilidad: generar datos sinteticos para testing y demostraciones.
 
 ### `cli.py` — Interfaz de Linea de Comandos (RF8)
 
-Responsabilidad: recibir los comandos del usuario y enrutarlos al modulo correcto.
+Este módulo será el responsable de recibir los comandos del usuario y enrutarlos al modulo correcto.
 
 **Estructura:**
 - Un parser principal con 5 subparsers (playbooks, jugadas, analisis, reportes, simulador)
@@ -231,7 +231,7 @@ Usuario escribe comando en terminal
         v
 Funcion cmd_* correspondiente
         |
-      +-+------------------+------------------+
+      ----------------------------------------
       |                    |                  |
       v                    v                  v
 data_manager.py       analyzer.py        reporter.py
@@ -247,7 +247,7 @@ data/playbooks.json
 
 ---
 
-## Convencion de Commits (Conventional Commits)
+## Convencion de Commits
 
 ```
 feat:      Nueva funcionalidad
@@ -259,13 +259,7 @@ chore:     Tareas de mantenimiento
 perf:      Mejora de rendimiento
 ```
 
-**Ejemplos:**
-```
-feat: implementar CRUD de playbooks con persistencia JSON (RF2)
-fix: corregir deteccion de outliers con dataset de una sola jugada
-test: anadir tests de integracion para pipeline importar-analizar-exportar
-docs: agregar diagrama UML y pseudocodigo RF4 y RF7
-```
+
 
 ---
 

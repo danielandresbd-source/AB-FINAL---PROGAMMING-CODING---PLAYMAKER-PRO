@@ -1,7 +1,7 @@
 # ============================================================
 # models.py
 # Clases de datos del dominio: Play, Playbook, Formation, PlayType
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import uuid

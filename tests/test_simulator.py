@@ -2,7 +2,7 @@
 # tests/test_simulator.py
 # Tests unitarios para simulator.py (RF10)
 # Cubre los casos T20, T21 del plan de testing
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import os

@@ -1,7 +1,7 @@
 # ============================================================
 # alerts.py
 # RF6: Motor de alertas automaticas de conflictos
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import logging
