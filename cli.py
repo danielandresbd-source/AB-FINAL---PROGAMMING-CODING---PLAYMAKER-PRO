@@ -2,7 +2,7 @@
 # cli.py
 # RF8: Punto de entrada principal de PlayMaker Pro
 # Interfaz de linea de comandos (CLI) con argparse multi-nivel
-# Proyecto: AB Final - Programming & Coding 
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import argparse

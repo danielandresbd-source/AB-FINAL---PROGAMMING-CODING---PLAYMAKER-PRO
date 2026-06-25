@@ -3,7 +3,7 @@
 # RF3: Estadisticas descriptivas de jugadas
 # RF4: Deteccion de anomalias en jugadas
 # RF7: Prediccion de efectividad con media movil simple
-# Proyecto: AB Final - Programming & Coding 
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import logging
