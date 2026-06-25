@@ -2,7 +2,7 @@
 # tests/test_data_importer.py
 # Tests unitarios para data_importer.py (RF1)
 # Cubre los casos T01, T02, T03, T04, T05 del plan de testing
-# Proyecto: AB Final - Programming & Coding 
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import csv
@@ -102,7 +102,7 @@ class TestCargarCsvValido:
             eliminar_archivo(ruta)
 
 
-# Tests T02: CSV vacio 
+# Tests T02: CSV vacio
 
 class TestCargarCsvVacio:
     """Tests para cargar un CSV que no tiene jugadas."""

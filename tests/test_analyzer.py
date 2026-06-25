@@ -2,7 +2,7 @@
 # tests/test_analyzer.py
 # Tests unitarios para analyzer.py (RF3, RF4, RF7)
 # Cubre los casos T11, T12, T13, T14, T15 del plan de testing
-# Proyecto: AB Final - Programming & Coding 
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import os
@@ -16,7 +16,7 @@ import analyzer
 from models import Play
 
 
-# Funcion de ayuda para crear jugadas de prueba 
+# Funcion de ayuda para crear jugadas de prueba
 
 def crear_jugada(nombre="Test Play", tipo="run", formacion="SHOTGUN",
                  yardas=5.0, tasa_exito=0.65, down_distance="1st&10",
@@ -251,7 +251,7 @@ class TestPredecirEfectividad:
         assert resultado["tendencia"] in tendencias_validas
 
 
-# Tests T15: Prediccion con pocos registros 
+# Tests T15: Prediccion con pocos registros
 
 class TestPredecirEfectividadError:
     """Tests para errores en la prediccion por falta de datos."""
