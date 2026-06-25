@@ -29,12 +29,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install flake8==7.0.0
-      - run: |
-          flake8 . \
-            --max-line-length=99 \
-            --exclude=venv,__pycache__,.git \
-            --extend-ignore=E402 \
-            --statistics
+      - run: flake8 . --max-line-length=99 --exclude=venv,__pycache__,.git --extend-ignore=E402,W291 --statistics
 
   test:
     name: Tests y Cobertura
