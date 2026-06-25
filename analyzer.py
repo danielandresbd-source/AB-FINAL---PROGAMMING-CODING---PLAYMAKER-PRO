@@ -3,7 +3,7 @@
 # RF3: Estadisticas descriptivas de jugadas
 # RF4: Deteccion de anomalias en jugadas
 # RF7: Prediccion de efectividad con media movil simple
-# Proyecto: AB Final - Programming & Coding
+# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
 # ============================================================
 
 import logging
@@ -134,7 +134,8 @@ def detectar_anomalias(jugadas):
             z_score = (jugada.yardas - media_yardas) / desviacion_estandar
             if abs(z_score) > 2.5:
                 razones_anomalia.append(
-                    f"Yardas fuera del rango estadistico (Z-score = {round(z_score, 2)})"
+                    f"Yardas fuera del rango estadistico (Z-score = "
+                    f"{round(z_score, 2)})"
                 )
 
         # Verificar si el nombre esta duplicado
@@ -150,14 +151,24 @@ def detectar_anomalias(jugadas):
 
         # Verificar si el down-distance es desconocido
         downs_validos = [
-            "1st&10", "1st&goal",
-            "2nd&long", "2nd&medium", "2nd&short", "2nd&goal",
-            "3rd&long", "3rd&medium", "3rd&short", "3rd&goal",
-            "4th&short", "4th&goal", "4th&long",
+            "1st&10",
+            "1st&goal",
+            "2nd&long",
+            "2nd&medium",
+            "2nd&short",
+            "2nd&goal",
+            "3rd&long",
+            "3rd&medium",
+            "3rd&short",
+            "3rd&goal",
+            "4th&short",
+            "4th&goal",
+            "4th&long",
         ]
         if jugada.down_distance not in downs_validos:
             razones_anomalia.append(
-                f"Situacion de down-and-distance desconocida: '{jugada.down_distance}'"
+                f"Situacion de down-and-distance desconocida: "
+                f"'{jugada.down_distance}'"
             )
 
         # Verificar hash_position
@@ -286,8 +297,12 @@ def obtener_resumen_tendencias(jugadas):
             resumen[tipo] = {
                 "total_jugadas": len(jugadas_tipo),
                 "tasa_promedio": round(promedio, 4),
-                "mejor_jugada": max(jugadas_tipo, key=lambda j: j.tasa_exito).nombre,
-                "peor_jugada": min(jugadas_tipo, key=lambda j: j.tasa_exito).nombre,
+                "mejor_jugada": max(
+                    jugadas_tipo, key=lambda j: j.tasa_exito
+                ).nombre,
+                "peor_jugada": min(
+                    jugadas_tipo, key=lambda j: j.tasa_exito
+                ).nombre,
             }
 
     return resumen

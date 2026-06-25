@@ -2,21 +2,17 @@
 # tests/test_data_importer.py
 # Tests unitarios para data_importer.py (RF1)
 # Cubre los casos T01, T02, T03, T04, T05 del plan de testing
-# Proyecto: AB Final - Programming & Coding
+# Proyecto: AB Final - Programming & Coding 
 # ============================================================
 
-
-import os
-import sys
 import tempfile
 
+import os
 import pytest
 
 # Agregar el directorio raiz al path para importar modulos
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import data_importer
-
 
 # Funciones de ayuda para los tests
 
@@ -36,14 +32,12 @@ def crear_csv_temporal(contenido, encoding="utf-8"):
     archivo_temporal.close()
     return archivo_temporal.name
 
-
 def eliminar_archivo(ruta):
     """Elimina un archivo temporal si existe."""
     if os.path.exists(ruta):
         os.unlink(ruta)
 
-
-# Tests T01: CSV valido
+# --- Tests T01: CSV valido ---
 
 class TestCargarCsvValido:
     """Tests para cargar un CSV con datos correctos."""
@@ -100,8 +94,7 @@ class TestCargarCsvValido:
         finally:
             eliminar_archivo(ruta)
 
-
-# Tests T02: CSV vacio
+# --- Tests T02: CSV vacio ---
 
 class TestCargarCsvVacio:
     """Tests para cargar un CSV que no tiene jugadas."""
@@ -121,8 +114,7 @@ class TestCargarCsvVacio:
         finally:
             eliminar_archivo(ruta)
 
-
-# Tests T03: Archivo no encontrado
+# --- Tests T03: Archivo no encontrado ---
 
 class TestArchivoNoEncontrado:
     """Tests para cuando el archivo CSV no existe."""
@@ -147,8 +139,7 @@ class TestArchivoNoEncontrado:
 
         assert ruta_inexistente in str(info_error.value)
 
-
-# Tests T04: Fila con datos invalidos
+# --- Tests T04: Fila con datos invalidos ---
 
 class TestValidarFilaConErrores:
     """Tests para filas con datos incorrectos en el CSV."""
@@ -194,8 +185,7 @@ class TestValidarFilaConErrores:
         finally:
             eliminar_archivo(ruta)
 
-
-# Tests T05: Columnas extra
+# --- Tests T05: Columnas extra ---
 
 class TestSanitizarDatos:
     """Tests para la sanitizacion de datos importados."""

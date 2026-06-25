@@ -1,7 +1,7 @@
 # ============================================================
 # data_importer.py
 # RF1: Importacion y validacion de jugadas desde archivos CSV
-# Proyecto: AB Final - Programming & Coding
+# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
 # ============================================================
 
 import csv
@@ -231,12 +231,13 @@ def sanitizar_datos(jugadas):
             jugadas_validas.append(jugada)
         except ValidationError as error:
             logger.warning(
-                f"Jugada '{jugada.nombre}' eliminada durante sanitizacion: {error}"
+                f"Jugada '{jugada.nombre}' eliminada durante "
+                f"sanitizacion: {error}"
             )
 
     logger.info(
-        f"Sanitizacion completada: {len(jugadas_validas)} jugadas "
-        f"validas de {len(jugadas)} totales."
+        f"Sanitizacion completada: {len(jugadas_validas)} jugadas validas "
+        f"de {len(jugadas)} totales."
     )
 
     return jugadas_validas

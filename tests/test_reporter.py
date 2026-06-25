@@ -6,17 +6,12 @@
 # ============================================================
 
 import os
-import sys
-
 import pytest
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import reporter
 from models import Play
 
-
-# Configuracion de fixtures
+# --- Configuracion de fixtures ---
 
 @pytest.fixture(autouse=True)
 def usar_directorio_temporal(tmp_path, monkeypatch):
@@ -29,8 +24,7 @@ def usar_directorio_temporal(tmp_path, monkeypatch):
     directorio_exports.mkdir()
     monkeypatch.setattr(reporter, "DIRECTORIO_EXPORTACIONES", str(directorio_exports))
 
-
-# Funcion de ayuda
+# --- Funcion de ayuda ---
 
 def crear_jugadas_prueba(cantidad=5):
     """Crea una lista de jugadas de prueba para los tests."""
@@ -50,8 +44,7 @@ def crear_jugadas_prueba(cantidad=5):
 
     return jugadas
 
-
-# Tests T16: Exportacion a CSV
+# --- Tests T16: Exportacion a CSV ---
 
 class TestExportarCsv:
     """Tests para la exportacion de jugadas a CSV."""
@@ -121,8 +114,7 @@ class TestExportarCsv:
 
         assert "mi_reporte_test.csv" in ruta
 
-
-# Tests T17: Grafico ASCII
+# --- Tests T17: Grafico ASCII ---
 
 class TestGraficoAscii:
     """Tests para la generacion de graficos ASCII."""

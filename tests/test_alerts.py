@@ -2,20 +2,13 @@
 # tests/test_alerts.py
 # Tests unitarios para alerts.py (RF6)
 # Cubre los casos T18, T19 del plan de testing
-# Proyecto: AB Final - Programming & Coding
+# Proyecto: AB Final - Programming & Coding 
 # ============================================================
-
-import os
-import sys
-
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from alerts import MotorAlertas
 from models import Play, Playbook
 
-
-# Funcion de ayuda
+# --- Funcion de ayuda ---
 
 def crear_jugada_valida(nombre="Jugada Valida"):
     """Crea una jugada con todos los datos correctos."""
@@ -30,8 +23,7 @@ def crear_jugada_valida(nombre="Jugada Valida"):
         hash_position="middle",
     )
 
-
-# Tests T18: Alerta por formacion invalida
+# --- Tests T18: Alerta por formacion invalida ---
 
 class TestEvaluarJugada:
     """Tests para el metodo evaluar_jugada del MotorAlertas."""
@@ -109,8 +101,7 @@ class TestEvaluarJugada:
 
         assert len(alertas) > 0
 
-
-# Tests T19: Alerta por capacidad del playbook
+# --- Tests T19: Alerta por capacidad del playbook ---
 
 class TestVerificarPlaybook:
     """Tests para el metodo verificar_playbook del MotorAlertas."""

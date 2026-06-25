@@ -2,23 +2,15 @@
 # cli.py
 # RF8: Punto de entrada principal de PlayMaker Pro
 # Interfaz de linea de comandos (CLI) con argparse multi-nivel
-# Proyecto: AB Final - Programming & Coding
+# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
 # ============================================================
 
+# Importaciones de la libreria estandar de Python
 import argparse
 import logging
 import sys
 
-# Configurar el sistema de registro de eventos antes de importar modulos
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-    ],
-)
-
-# Importar los modulos del proyecto
+# Importaciones de los modulos del proyecto
 import alerts
 import analyzer
 import data_importer
@@ -33,6 +25,15 @@ from exceptions import (
     ValidationError,
 )
 from models import Play
+
+# Configurar el sistema de registro de eventos
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+    ],
+)
 
 # Desactivar los logs en la salida normal del CLI para no mezclarlos con la UI
 logging.disable(logging.CRITICAL)
@@ -477,14 +478,18 @@ def construir_parser():
     # playbooks crear
     p_crear_pb = sub_pb.add_parser("crear", help="Crear un nuevo playbook")
     p_crear_pb.add_argument("--nombre", required=True, help="Nombre del playbook")
-    p_crear_pb.add_argument("--tipo", help="Tipo de ofensa (spread, power, west_coast...)")
+    p_crear_pb.add_argument(
+        "--tipo", help="Tipo de ofensa (spread, power, west_coast...)"
+    )
 
     # playbooks eliminar
     p_eliminar_pb = sub_pb.add_parser("eliminar", help="Eliminar un playbook por ID")
     p_eliminar_pb.add_argument("--id", required=True, help="ID del playbook a eliminar")
 
     # playbooks exportar
-    p_exportar_pb = sub_pb.add_parser("exportar", help="Exportar jugadas de un playbook a CSV")
+    p_exportar_pb = sub_pb.add_parser(
+        "exportar", help="Exportar jugadas de un playbook a CSV"
+    )
     p_exportar_pb.add_argument("--id", required=True, help="ID del playbook a exportar")
     p_exportar_pb.add_argument("--archivo", help="Nombre del archivo de salida (opcional)")
 
@@ -499,33 +504,55 @@ def construir_parser():
 
     # jugadas listar
     p_listar_j = sub_j.add_parser("listar", help="Listar jugadas de un playbook")
-    p_listar_j.add_argument("--playbook-id", required=True, dest="playbook_id",
-                            help="ID del playbook")
+    p_listar_j.add_argument(
+        "--playbook-id",
+        required=True,
+        dest="playbook_id",
+        help="ID del playbook",
+    )
 
     # jugadas anadir
-    p_anadir_j = sub_j.add_parser("anadir", help="Anadir una jugada a un playbook")
+    p_anadir_j = sub_j.add_parser(
+        "anadir", help="Anadir una jugada a un playbook"
+    )
     p_anadir_j.add_argument("--playbook", required=True, help="ID del playbook")
     p_anadir_j.add_argument("--nombre", required=True, help="Nombre de la jugada")
-    p_anadir_j.add_argument("--tipo", required=True,
-                            choices=["run", "pass", "special_teams"],
-                            help="Tipo de jugada")
-    p_anadir_j.add_argument("--formacion", required=True, help="Formacion de la jugada")
+    p_anadir_j.add_argument(
+        "--tipo",
+        required=True,
+        choices=["run", "pass", "special_teams"],
+        help="Tipo de jugada",
+    )
+    p_anadir_j.add_argument(
+        "--formacion", required=True, help="Formacion de la jugada"
+    )
     p_anadir_j.add_argument("--yardas", help="Yardas promedio de la jugada")
     p_anadir_j.add_argument("--descripcion", help="Descripcion de la jugada")
-    p_anadir_j.add_argument("--tasa-exito", dest="tasa_exito",
-                            help="Tasa de exito entre 0.0 y 1.0")
+    p_anadir_j.add_argument(
+        "--tasa-exito",
+        dest="tasa_exito",
+        help="Tasa de exito entre 0.0 y 1.0",
+    )
     p_anadir_j.add_argument("--down", help="Situacion de down-and-distance")
-    p_anadir_j.add_argument("--hash", help="Posicion en el campo (left/middle/right)")
+    p_anadir_j.add_argument(
+        "--hash", help="Posicion en el campo (left/middle/right)"
+    )
 
     # jugadas eliminar
     p_eliminar_j = sub_j.add_parser("eliminar", help="Eliminar una jugada")
     p_eliminar_j.add_argument("--playbook", required=True, help="ID del playbook")
-    p_eliminar_j.add_argument("--id", required=True, help="ID de la jugada a eliminar")
+    p_eliminar_j.add_argument(
+        "--id", required=True, help="ID de la jugada a eliminar"
+    )
 
     # jugadas importar (RF1)
-    p_importar_j = sub_j.add_parser("importar", help="Importar jugadas desde un CSV")
+    p_importar_j = sub_j.add_parser(
+        "importar", help="Importar jugadas desde un CSV"
+    )
     p_importar_j.add_argument("--archivo", required=True, help="Ruta del archivo CSV")
-    p_importar_j.add_argument("--playbook", required=True, help="ID del playbook destino")
+    p_importar_j.add_argument(
+        "--playbook", required=True, help="ID del playbook destino"
+    )
 
     # ==========================================
     # Modulo: analisis
@@ -537,17 +564,25 @@ def construir_parser():
     sub_an = parser_an.add_subparsers(dest="accion")
 
     # analisis estadisticas (RF3)
-    p_stats = sub_an.add_parser("estadisticas", help="Ver estadisticas del playbook")
+    p_stats = sub_an.add_parser(
+        "estadisticas", help="Ver estadisticas del playbook"
+    )
     p_stats.add_argument("--playbook", required=True, help="ID del playbook")
 
     # analisis anomalias (RF4)
-    p_anom = sub_an.add_parser("anomalias", help="Detectar jugadas con datos inusuales")
+    p_anom = sub_an.add_parser(
+        "anomalias", help="Detectar jugadas con datos inusuales"
+    )
     p_anom.add_argument("--playbook", required=True, help="ID del playbook")
 
     # analisis prediccion (RF7)
-    p_pred = sub_an.add_parser("prediccion", help="Predecir efectividad de jugadas")
+    p_pred = sub_an.add_parser(
+        "prediccion", help="Predecir efectividad de jugadas"
+    )
     p_pred.add_argument("--playbook", required=True, help="ID del playbook")
-    p_pred.add_argument("--ventana", default="5", help="Tamano de la ventana (default: 5)")
+    p_pred.add_argument(
+        "--ventana", default="5", help="Tamano de la ventana (default: 5)"
+    )
 
     # analisis alertas (RF6)
     p_alert = sub_an.add_parser("alertas", help="Verificar conflictos en el playbook")
@@ -576,10 +611,19 @@ def construir_parser():
     sub_sim = parser_sim.add_subparsers(dest="accion")
 
     # simulador generar (RF10)
-    p_gen = sub_sim.add_parser("generar", help="Generar dataset sintetico de jugadas")
-    p_gen.add_argument("--jugadas", default="20", help="Cantidad de jugadas a generar")
-    p_gen.add_argument("--tipo", choices=["run", "pass", "special_teams"],
-                       help="Tipo de jugadas a generar")
+    p_gen = sub_sim.add_parser(
+        "generar", help="Generar dataset sintetico de jugadas"
+    )
+    p_gen.add_argument(
+        "--jugadas",
+        default="20",
+        help="Cantidad de jugadas a generar",
+    )
+    p_gen.add_argument(
+        "--tipo",
+        choices=["run", "pass", "special_teams"],
+        help="Tipo de jugadas a generar",
+    )
 
     return parser
 
