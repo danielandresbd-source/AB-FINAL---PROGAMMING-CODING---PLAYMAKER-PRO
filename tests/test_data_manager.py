@@ -5,19 +5,11 @@
 # Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
 # ============================================================
 
-import json
-import os
-import sys
-import tempfile
-
 import pytest
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 import data_manager
-from exceptions import PlaybookNotFoundError, PlayNotFoundError, ValidationError
-from models import Play, Playbook
-
+from exceptions import PlaybookNotFoundError, ValidationError
+from models import Play
 
 # --- Configuracion de los tests ---
 
@@ -37,7 +29,6 @@ def usar_json_temporal(tmp_path, monkeypatch):
     # Decirle a data_manager que use el archivo temporal
     ruta_temporal = str(directorio_data / "playbooks.json")
     monkeypatch.setattr(data_manager, "RUTA_JSON", ruta_temporal)
-
 
 # --- Tests T06: Crear playbook ---
 
@@ -69,7 +60,6 @@ class TestCrearPlaybook:
 
         assert playbook_recuperado.nombre == "Test Playbook"
 
-
 # --- Tests T07: Crear playbook con datos invalidos ---
 
 class TestCrearPlaybookInvalido:
@@ -90,7 +80,6 @@ class TestCrearPlaybookInvalido:
 
         with pytest.raises(ValidationError):
             data_manager.crear_playbook(nombre="   ")
-
 
 # --- Tests T08: Actualizar jugada ---
 
@@ -144,7 +133,6 @@ class TestActualizarJugada:
 
         assert jugada_recuperada.yardas == 10.0
 
-
 # --- Tests T09: Eliminar playbook con ID inexistente ---
 
 class TestEliminarPlaybookInexistente:
@@ -169,7 +157,6 @@ class TestEliminarPlaybookInexistente:
 
         with pytest.raises(PlaybookNotFoundError):
             data_manager.obtener_playbook("pb_999999")
-
 
 # --- Tests T10: Obtener jugada por ID ---
 
