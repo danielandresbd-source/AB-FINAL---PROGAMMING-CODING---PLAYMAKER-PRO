@@ -8,6 +8,7 @@
 
 import logging
 import math
+from collections import Counter, defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -33,21 +34,9 @@ def calcular_estadisticas(jugadas):
         logger.warning("No hay jugadas para calcular estadisticas.")
         return {}
 
-    # Contar jugadas por tipo
-    jugadas_por_tipo = {}
-    for jugada in jugadas:
-        tipo = jugada.tipo
-        if tipo not in jugadas_por_tipo:
-            jugadas_por_tipo[tipo] = 0
-        jugadas_por_tipo[tipo] += 1
-
-    # Contar jugadas por formacion
-    jugadas_por_formacion = {}
-    for jugada in jugadas:
-        formacion = jugada.formacion
-        if formacion not in jugadas_por_formacion:
-            jugadas_por_formacion[formacion] = 0
-        jugadas_por_formacion[formacion] += 1
+    # Counter simplifica los conteos y evita bucles manuales repetitivos.
+    jugadas_por_tipo = dict(Counter(jugada.tipo for jugada in jugadas))
+    jugadas_por_formacion = dict(Counter(jugada.formacion for jugada in jugadas))
 
     # Encontrar la formacion mas usada
     formacion_mas_usada = max(
@@ -279,13 +268,10 @@ def obtener_resumen_tendencias(jugadas):
     if not jugadas:
         return {}
 
-    # Agrupar jugadas por tipo
-    jugadas_por_tipo = {}
+    # Agrupar con defaultdict mantiene clara la intencion del algoritmo.
+    jugadas_por_tipo = defaultdict(list)
     for jugada in jugadas:
-        tipo = jugada.tipo
-        if tipo not in jugadas_por_tipo:
-            jugadas_por_tipo[tipo] = []
-        jugadas_por_tipo[tipo].append(jugada)
+        jugadas_por_tipo[jugada.tipo].append(jugada)
 
     resumen = {}
 
