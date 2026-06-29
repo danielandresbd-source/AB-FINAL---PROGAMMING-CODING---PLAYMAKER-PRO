@@ -111,8 +111,6 @@ def detectar_anomalias(jugadas):
     # de la media. Si es mayor a 2.5 lo consideramos un outlier.
     lista_yardas = [j.yardas for j in jugadas]
     media_yardas = sum(lista_yardas) / len(lista_yardas)
-
-
     varianza = sum((y - media_yardas) ** 2 for y in lista_yardas) / len(lista_yardas)
     desviacion_estandar = math.sqrt(varianza) if varianza > 0 else 0
 
@@ -168,8 +166,6 @@ def detectar_anomalias(jugadas):
             razones_anomalia.append(
                 f"Posicion en el campo no reconocida: '{jugada.hash_position}'"
             )
-
-
         if razones_anomalia:
             anomalias_encontradas.append({
                 "jugada": jugada,
