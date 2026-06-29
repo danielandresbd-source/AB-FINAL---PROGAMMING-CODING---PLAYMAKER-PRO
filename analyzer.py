@@ -34,22 +34,24 @@ def calcular_estadisticas(jugadas):
         logger.warning("No hay jugadas para calcular estadisticas.")
         return {}
 
-    # Counter simplifica los conteos y evita bucles manuales repetitivos.
+    # Counter cuenta cuantas jugadas hay de cada tipo y formacion.
+    # Es mucho mas limpio que hacer un bucle manual con un dict vacio.
+    # Ejemplo: Counter(['run', 'pass', 'run']) -> {'run': 2, 'pass': 1}
     jugadas_por_tipo = dict(Counter(jugada.tipo for jugada in jugadas))
     jugadas_por_formacion = dict(Counter(jugada.formacion for jugada in jugadas))
 
-    # Encontrar la formacion mas usada
+    # Encontrar la formacion mas usada usando el maximo del conteo
     formacion_mas_usada = max(
         jugadas_por_formacion, key=lambda f: jugadas_por_formacion[f]
     )
 
-    # Calcular estadisticas de yardas
+    # Calcular estadisticas basicas de yardas
     lista_yardas = [j.yardas for j in jugadas]
     yardas_promedio = sum(lista_yardas) / len(lista_yardas)
     yardas_minimas = min(lista_yardas)
     yardas_maximas = max(lista_yardas)
 
-    # Obtener el top 5 de jugadas por tasa de exito
+    # Top 5 jugadas ordenadas de mayor a menor tasa de exito
     jugadas_ordenadas = sorted(jugadas, key=lambda j: j.tasa_exito, reverse=True)
     top_5_jugadas = [
         {
@@ -104,21 +106,35 @@ def detectar_anomalias(jugadas):
 
     anomalias_encontradas = []
 
-    # Calcular media y desviacion estandar de yardas para Z-score
+    # Calcular media y desviacion estandar de yardas para el Z-score.
+    # El Z-score nos dice cuantas desviaciones estandar se aleja un valor
+    # de la media. Si es mayor a 2.5 lo consideramos un outlier.
     lista_yardas = [j.yardas for j in jugadas]
     media_yardas = sum(lista_yardas) / len(lista_yardas)
-
-    # Calcular desviacion estandar manualmente
     varianza = sum((y - media_yardas) ** 2 for y in lista_yardas) / len(lista_yardas)
     desviacion_estandar = math.sqrt(varianza) if varianza > 0 else 0
 
-    # Recopilar todos los nombres para detectar duplicados
-    todos_los_nombres = [j.nombre.lower() for j in jugadas]
+    # Usamos Counter para contar cuantas veces aparece cada nombre.
+    # Es mas eficiente que llamar a list.count() dentro del bucle principal
+    # porque Counter recorre la lista una sola vez (O(n)) mientras que
+    # list.count() la recorreria una vez por cada jugada (O(n^2)).
+    nombres_counter = Counter(j.nombre.lower() for j in jugadas)
+
+    # Situaciones de down-and-distance que reconoce el sistema
+    downs_validos = [
+        "1st&10", "1st&goal",
+        "2nd&long", "2nd&medium", "2nd&short", "2nd&goal",
+        "3rd&long", "3rd&medium", "3rd&short", "3rd&goal",
+        "4th&short", "4th&goal", "4th&long",
+    ]
+
+    # Posiciones validas en el campo
+    posiciones_validas = ["left", "middle", "right"]
 
     for jugada in jugadas:
         razones_anomalia = []
 
-        # Verificar si las yardas son un outlier (Z-score > 2.5)
+        # Verificar si las yardas son un outlier estadistico
         if desviacion_estandar > 0:
             z_score = (jugada.yardas - media_yardas) / desviacion_estandar
             if abs(z_score) > 2.5:
@@ -127,47 +143,29 @@ def detectar_anomalias(jugadas):
                     f"{round(z_score, 2)})"
                 )
 
-        # Verificar si el nombre esta duplicado
-        nombre_lower = jugada.nombre.lower()
-        if todos_los_nombres.count(nombre_lower) > 1:
+        # Verificar nombre duplicado usando el Counter precalculado
+        # Esto evita recorrer toda la lista de nuevo por cada jugada
+        if nombres_counter[jugada.nombre.lower()] > 1:
             razones_anomalia.append("Nombre de jugada duplicado en el dataset")
 
-        # Verificar si la tasa de exito es imposible
+        # Verificar tasa de exito imposible (debe estar entre 0 y 1)
         if jugada.tasa_exito < 0.0 or jugada.tasa_exito > 1.0:
             razones_anomalia.append(
                 f"Tasa de exito fuera del rango valido: {jugada.tasa_exito}"
             )
 
-        # Verificar si el down-distance es desconocido
-        downs_validos = [
-            "1st&10",
-            "1st&goal",
-            "2nd&long",
-            "2nd&medium",
-            "2nd&short",
-            "2nd&goal",
-            "3rd&long",
-            "3rd&medium",
-            "3rd&short",
-            "3rd&goal",
-            "4th&short",
-            "4th&goal",
-            "4th&long",
-        ]
+        # Verificar down-and-distance desconocido
         if jugada.down_distance not in downs_validos:
             razones_anomalia.append(
                 f"Situacion de down-and-distance desconocida: "
                 f"'{jugada.down_distance}'"
             )
 
-        # Verificar hash_position
-        posiciones_validas = ["left", "middle", "right"]
+        # Verificar hash_position desconocida
         if jugada.hash_position not in posiciones_validas:
             razones_anomalia.append(
                 f"Posicion en el campo no reconocida: '{jugada.hash_position}'"
             )
-
-        # Si se encontraron razones de anomalia, agregar a la lista
         if razones_anomalia:
             anomalias_encontradas.append({
                 "jugada": jugada,
@@ -188,8 +186,9 @@ def predecir_efectividad(jugadas, ventana=5):
     """
     Predice la efectividad de las proximas jugadas usando media movil simple.
 
-    La media movil simple calcula el promedio de los ultimos N registros
+    La media movil simple (SMA) calcula el promedio de los ultimos N registros
     (donde N es el tamano de la ventana) y usa ese promedio como prediccion.
+    Es el metodo mas basico de prediccion de tendencias temporales.
 
     Args:
         jugadas: Lista de objetos Play ordenados cronologicamente.
@@ -209,23 +208,23 @@ def predecir_efectividad(jugadas, ventana=5):
             f"la prediccion. Solo hay {len(jugadas)} jugadas."
         )
 
-    # Extraer las tasas de exito ordenadas por fecha de creacion
+    # Ordenar por fecha de creacion para respetar el orden cronologico
     jugadas_ordenadas = sorted(jugadas, key=lambda j: j.creada_en)
     tasas_de_exito = [j.tasa_exito for j in jugadas_ordenadas]
 
-    # Calcular la media movil para cada posicion
+    # Calcular la media movil deslizante.
+    # Para cada posicion i, tomamos los 'ventana' valores anteriores
+    # y calculamos su promedio. La ultima media es la prediccion.
     medias_moviles = []
     for i in range(ventana, len(tasas_de_exito) + 1):
-        # Tomar los ultimos 'ventana' valores hasta la posicion i
         ventana_actual = tasas_de_exito[i - ventana:i]
         media = sum(ventana_actual) / ventana
-
         medias_moviles.append(round(media, 4))
 
     # La prediccion es la ultima media movil calculada
     prediccion = medias_moviles[-1]
 
-    # Calcular la tendencia (subiendo, bajando o estable)
+    # Calcular la tendencia comparando las dos ultimas medias moviles
     if len(medias_moviles) >= 2:
         diferencia = medias_moviles[-1] - medias_moviles[-2]
         if diferencia > 0.01:
@@ -256,19 +255,22 @@ def predecir_efectividad(jugadas, ventana=5):
 
 def obtener_resumen_tendencias(jugadas):
     """
-    Genera un resumen completo de las tendencias del dataset.
+    Genera un resumen de tendencias agrupando jugadas por tipo.
 
     Args:
         jugadas: Lista de objetos Play para analizar.
 
     Returns:
-        Diccionario con el resumen de tendencias por tipo de jugada.
+        Diccionario con estadisticas de tendencia por tipo de jugada.
+        Solo incluye tipos con al menos 2 jugadas (necesario para comparar).
     """
 
     if not jugadas:
         return {}
 
-    # Agrupar con defaultdict mantiene clara la intencion del algoritmo.
+    # defaultdict(list) agrupa las jugadas por tipo automaticamente.
+    # Es equivalente a hacer un if/else manual para inicializar la lista,
+    # pero mucho mas limpio de leer.
     jugadas_por_tipo = defaultdict(list)
     for jugada in jugadas:
         jugadas_por_tipo[jugada.tipo].append(jugada)
@@ -276,10 +278,10 @@ def obtener_resumen_tendencias(jugadas):
     resumen = {}
 
     for tipo, jugadas_tipo in jugadas_por_tipo.items():
+        # Necesitamos al menos 2 jugadas del mismo tipo para comparar
         if len(jugadas_tipo) >= 2:
             tasas = [j.tasa_exito for j in jugadas_tipo]
             promedio = sum(tasas) / len(tasas)
-
             resumen[tipo] = {
                 "total_jugadas": len(jugadas_tipo),
                 "tasa_promedio": round(promedio, 4),
