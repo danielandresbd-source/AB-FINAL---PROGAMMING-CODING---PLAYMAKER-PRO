@@ -236,4 +236,3 @@ class TestMainEjecutaComandos:
         salida = capsys.readouterr().out
 
         assert "Comando no reconocido" in salida
-
