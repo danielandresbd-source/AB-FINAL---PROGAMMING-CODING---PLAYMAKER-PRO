@@ -2,7 +2,7 @@
 # tests/test_analyzer.py
 # Tests unitarios para analyzer.py (RF3, RF4, RF7)
 # Cubre los casos T11, T12, T13, T14, T15 del plan de testing
-# Proyecto: AB Final - Programming & Coding 
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 import pytest
