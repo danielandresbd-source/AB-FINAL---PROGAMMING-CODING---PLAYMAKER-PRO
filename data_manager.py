@@ -4,6 +4,21 @@
 # Proyecto: AB Final - Programming & Coding
 # ============================================================
 
+"""
+Este modulo implementa el CRUD (Create, Read, Update, Delete) del sistema.
+
+CRUD significa:
+- Create: crear nuevos playbooks y jugadas
+- Read: leer y listar playbooks y jugadas existentes
+- Update: modificar datos de un playbook o jugada
+- Delete: eliminar un playbook o jugada
+
+Todos los datos se guardan en un archivo JSON (playbooks.json). Esto
+significa que los datos persisten en disco y siguen ahi aunque
+cerremos y volvamos a abrir el programa, a diferencia de guardarlos
+solo en variables de Python que se pierden al terminar la ejecucion.
+"""
+
 import json
 import logging
 import os
@@ -20,6 +35,10 @@ RUTA_JSON = os.path.join("data", "playbooks.json")
 
 
 # --- Funciones de lectura y escritura del archivo JSON ---
+# Estas funciones empiezan con guion bajo (_cargar_datos_json) porque
+# son funciones "privadas": solo las usan las demas funciones de este
+# mismo modulo internamente, no estan pensadas para llamarse desde
+# fuera (cli.py, tests, etc.)
 
 def _cargar_datos_json():
     """
@@ -31,8 +50,10 @@ def _cargar_datos_json():
         Diccionario con la lista de playbooks guardados.
     """
 
+    # Si el archivo todavia no existe (por ejemplo, primera vez que
+    # se ejecuta la app), no hay nada que leer: devolvemos una
+    # estructura vacia en lugar de lanzar un error
     if not os.path.exists(RUTA_JSON):
-        # Si no existe el archivo, devolvemos estructura vacia
         return {"playbooks": []}
 
     try:
@@ -40,6 +61,10 @@ def _cargar_datos_json():
             datos = json.load(archivo)
             return datos
     except json.JSONDecodeError:
+        # Si el archivo existe pero su contenido no es JSON valido
+        # (por ejemplo, se corrompio o alguien lo edito mal a mano),
+        # en vez de crashear toda la app, avisamos en el log y
+        # continuamos con datos vacios
         logger.error(
             f"El archivo '{RUTA_JSON}' esta corrupto o no es JSON valido. "
             "Se iniciara con datos vacios."
@@ -57,10 +82,13 @@ def _guardar_datos_json(datos):
         datos: Diccionario con los datos a guardar.
     """
 
-    # Crear el directorio data/ si no existe
+    # Crear el directorio data/ si no existe todavia
+    # (exist_ok=True evita que lance error si ya existe)
     os.makedirs(os.path.dirname(RUTA_JSON), exist_ok=True)
 
     with open(RUTA_JSON, "w", encoding="utf-8") as archivo:
+        # indent=2 hace el JSON legible por humanos (util para depurar)
+        # ensure_ascii=False permite guardar acentos y caracteres especiales
         json.dump(datos, archivo, indent=2, ensure_ascii=False)
 
     logger.info(f"Datos guardados correctamente en '{RUTA_JSON}'.")
@@ -77,6 +105,9 @@ def _obtener_todos_playbooks():
     datos = _cargar_datos_json()
     playbooks = []
 
+    # El JSON guarda los playbooks como diccionarios planos, asi que
+    # los convertimos de vuelta a objetos Playbook para poder usar
+    # sus metodos (anadir_jugada, obtener_jugada, etc.)
     for datos_pb in datos.get("playbooks", []):
         playbook = Playbook.desde_diccionario(datos_pb)
         playbooks.append(playbook)
@@ -92,6 +123,10 @@ def _guardar_todos_playbooks(playbooks):
         playbooks: Lista de objetos Playbook a guardar.
     """
 
+    # Convertimos cada objeto Playbook de vuelta a diccionario antes
+    # de guardarlo, porque json.dump() no sabe serializar objetos
+    # propios de Python directamente, solo tipos basicos (dict, list,
+    # str, int, etc.)
     datos = {
         "playbooks": [pb.a_diccionario() for pb in playbooks]
     }
@@ -115,21 +150,27 @@ def crear_playbook(nombre, tipo_ofensa="spread"):
         ValidationError: Si el nombre esta vacio.
     """
 
-    # Validar que el nombre no este vacio
+    # Validar que el nombre no este vacio antes de crear nada.
+    # .strip() elimina espacios en blanco, asi que un nombre de
+    # solo espacios ("   ") tambien se considera vacio
     if not nombre or not nombre.strip():
         raise ValidationError("El nombre del playbook no puede estar vacio.")
 
-    # Crear el nuevo playbook
+    # Crear el nuevo playbook con los datos ya limpios (sin espacios
+    # sobrantes al principio o final)
     nuevo_playbook = Playbook(
         nombre=nombre.strip(),
         tipo_ofensa=tipo_ofensa.strip() if tipo_ofensa else "spread",
     )
 
-    # Cargar los playbooks existentes y anadir el nuevo
+    # Cargar todos los playbooks existentes desde el JSON y anadir
+    # el nuevo a la lista en memoria
     playbooks = _obtener_todos_playbooks()
     playbooks.append(nuevo_playbook)
 
-    # Guardar todos los playbooks con el nuevo incluido
+    # Guardar la lista completa (con el nuevo incluido) de vuelta al JSON.
+    # Como no hay base de datos, cada operacion de escritura reescribe
+    # el archivo entero con todos los playbooks.
     _guardar_todos_playbooks(playbooks)
 
     logger.info(f"Playbook creado: '{nuevo_playbook.nombre}' (ID: {nuevo_playbook.id})")
@@ -166,10 +207,14 @@ def obtener_playbook(playbook_id):
 
     playbooks = _obtener_todos_playbooks()
 
+    # Recorremos todos los playbooks buscando el que tenga el ID exacto.
+    # En cuanto lo encontramos, devolvemos directamente sin seguir
+    # recorriendo el resto de la lista (mas eficiente que recorrer todo)
     for playbook in playbooks:
         if playbook.id == playbook_id:
             return playbook
 
+    # Si llegamos aqui, recorrimos toda la lista sin encontrar el ID
     raise PlaybookNotFoundError(
         f"No se encontro ningun playbook con el ID '{playbook_id}'."
     )
@@ -195,7 +240,7 @@ def actualizar_playbook(playbook_id, nuevo_nombre=None, nuevo_tipo_ofensa=None):
     playbooks = _obtener_todos_playbooks()
     playbook_a_actualizar = None
 
-    # Buscar el playbook en la lista
+    # Buscar el playbook en la lista por su ID
     for playbook in playbooks:
         if playbook.id == playbook_id:
             playbook_a_actualizar = playbook
@@ -206,7 +251,9 @@ def actualizar_playbook(playbook_id, nuevo_nombre=None, nuevo_tipo_ofensa=None):
             f"No se encontro el playbook con ID '{playbook_id}'."
         )
 
-    # Aplicar los cambios si se proporcionaron
+    # Actualizacion parcial: solo modificamos los campos que el
+    # usuario realmente proporciono. Si nuevo_nombre es None, significa
+    # que no se quiere cambiar el nombre, asi que lo dejamos como esta.
     if nuevo_nombre is not None:
         if not nuevo_nombre.strip():
             raise ValidationError("El nuevo nombre del playbook no puede estar vacio.")
@@ -215,10 +262,12 @@ def actualizar_playbook(playbook_id, nuevo_nombre=None, nuevo_tipo_ofensa=None):
     if nuevo_tipo_ofensa is not None:
         playbook_a_actualizar.tipo_ofensa = nuevo_tipo_ofensa.strip()
 
-    # Actualizar la fecha de modificacion
+    # Actualizar la fecha de modificacion para saber cuando fue
+    # la ultima vez que se toco este playbook
     playbook_a_actualizar.actualizado_en = datetime.now().isoformat()
 
-    # Guardar los cambios
+    # Guardar todos los playbooks (incluyendo el que acabamos de
+    # modificar) de vuelta al archivo JSON
     _guardar_todos_playbooks(playbooks)
 
     logger.info(f"Playbook actualizado: ID '{playbook_id}'")
@@ -239,17 +288,20 @@ def eliminar_playbook(playbook_id):
 
     playbooks = _obtener_todos_playbooks()
 
-    # Filtrar para quedar con todos excepto el que se quiere eliminar
+    # Construimos una nueva lista con todos los playbooks EXCEPTO el
+    # que queremos eliminar (list comprehension con filtro)
     playbooks_filtrados = [pb for pb in playbooks if pb.id != playbook_id]
 
-    # Si la lista no cambio de tamano, el playbook no existia
+    # Si la lista filtrada tiene el mismo tamano que la original,
+    # significa que ningun playbook coincidio con el ID buscado,
+    # es decir, el playbook no existia
     if len(playbooks_filtrados) == len(playbooks):
         raise PlaybookNotFoundError(
             f"No se encontro el playbook con ID '{playbook_id}'. "
             "Verifica el ID e intentalo de nuevo."
         )
 
-    # Guardar la lista sin el playbook eliminado
+    # Guardar la lista ya sin el playbook eliminado
     _guardar_todos_playbooks(playbooks_filtrados)
 
     logger.info(f"Playbook eliminado: ID '{playbook_id}'")
@@ -274,7 +326,9 @@ def anadir_jugada(playbook_id, jugada):
         ValidationError: Si los datos de la jugada son incorrectos.
     """
 
-    # Validar la jugada antes de anadirla
+    # Validar la jugada ANTES de tocar el archivo JSON. Asi, si la
+    # jugada tiene datos invalidos, fallamos rapido sin haber hecho
+    # ninguna operacion de lectura/escritura innecesaria.
     jugada.validar()
 
     playbooks = _obtener_todos_playbooks()
@@ -291,10 +345,12 @@ def anadir_jugada(playbook_id, jugada):
             f"No se encontro el playbook con ID '{playbook_id}'."
         )
 
-    # Anadir la jugada al playbook (puede lanzar PlaybookFullError)
+    # Anadir la jugada al playbook. Este metodo puede lanzar
+    # PlaybookFullError si el playbook ya tiene 50 jugadas (limite
+    # definido en la clase Playbook)
     playbook_objetivo.anadir_jugada(jugada)
 
-    # Guardar los cambios
+    # Guardar todos los playbooks con la jugada ya anadida
     _guardar_todos_playbooks(playbooks)
 
     logger.info(
@@ -324,7 +380,7 @@ def actualizar_jugada(playbook_id, play_id, datos_nuevos):
     playbooks = _obtener_todos_playbooks()
     playbook_objetivo = None
 
-    # Buscar el playbook
+    # Buscar el playbook que contiene la jugada a actualizar
     for playbook in playbooks:
         if playbook.id == playbook_id:
             playbook_objetivo = playbook
@@ -335,10 +391,13 @@ def actualizar_jugada(playbook_id, play_id, datos_nuevos):
             f"No se encontro el playbook con ID '{playbook_id}'."
         )
 
-    # Buscar la jugada dentro del playbook
+    # Buscar la jugada dentro del playbook (este metodo ya lanza
+    # PlayNotFoundError internamente si no la encuentra)
     jugada_objetivo = playbook_objetivo.obtener_jugada(play_id)
 
-    # Aplicar los cambios que se hayan enviado
+    # Actualizacion parcial: solo cambiamos los campos que el usuario
+    # incluyo en el diccionario datos_nuevos. Si un campo no esta en
+    # el diccionario, la jugada conserva su valor anterior para ese campo.
     if "nombre" in datos_nuevos:
         jugada_objetivo.nombre = datos_nuevos["nombre"]
     if "tipo" in datos_nuevos:
@@ -358,13 +417,16 @@ def actualizar_jugada(playbook_id, play_id, datos_nuevos):
     if "etiquetas" in datos_nuevos:
         jugada_objetivo.etiquetas = datos_nuevos["etiquetas"]
 
-    # Validar la jugada despues de los cambios
+    # Validar la jugada despues de aplicar los cambios, para asegurarnos
+    # de que los nuevos valores tambien cumplen las reglas de negocio
+    # (por ejemplo, que tasa_exito siga estando entre 0.0 y 1.0)
     jugada_objetivo.validar()
 
-    # Actualizar la fecha del playbook
+    # Actualizar la fecha de modificacion del playbook, ya que una de
+    # sus jugadas cambio
     playbook_objetivo.actualizado_en = datetime.now().isoformat()
 
-    # Guardar los cambios
+    # Guardar todos los playbooks con la jugada ya actualizada
     _guardar_todos_playbooks(playbooks)
 
     logger.info(f"Jugada '{play_id}' actualizada en playbook '{playbook_id}'")
@@ -388,7 +450,7 @@ def eliminar_jugada(playbook_id, play_id):
     playbooks = _obtener_todos_playbooks()
     playbook_objetivo = None
 
-    # Buscar el playbook
+    # Buscar el playbook que contiene la jugada a eliminar
     for playbook in playbooks:
         if playbook.id == playbook_id:
             playbook_objetivo = playbook
@@ -399,10 +461,11 @@ def eliminar_jugada(playbook_id, play_id):
             f"No se encontro el playbook con ID '{playbook_id}'."
         )
 
-    # Eliminar la jugada (puede lanzar PlayNotFoundError)
+    # Eliminar la jugada del playbook (este metodo ya lanza
+    # PlayNotFoundError internamente si la jugada no existe)
     playbook_objetivo.eliminar_jugada(play_id)
 
-    # Guardar los cambios
+    # Guardar todos los playbooks ya sin la jugada eliminada
     _guardar_todos_playbooks(playbooks)
 
     logger.info(f"Jugada '{play_id}' eliminada del playbook '{playbook_id}'")
@@ -424,5 +487,8 @@ def obtener_jugada(playbook_id, play_id):
         PlayNotFoundError: Si no existe la jugada.
     """
 
+    # Reutilizamos obtener_playbook() para encontrar el playbook
+    # (ya maneja el caso de que no exista) y luego delegamos en el
+    # propio objeto Playbook para buscar la jugada dentro de el
     playbook = obtener_playbook(playbook_id)
     return playbook.obtener_jugada(play_id)

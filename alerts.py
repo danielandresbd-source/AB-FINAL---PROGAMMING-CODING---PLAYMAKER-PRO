@@ -4,6 +4,19 @@
 # Proyecto: AB Final - Programming & Coding
 # ============================================================
 
+"""
+Este modulo implementa el motor de alertas del sistema.
+
+Su trabajo es revisar jugadas y playbooks en busca de datos sospechosos
+o problemas de capacidad, y avisar al usuario antes de que esos datos
+causen errores mas adelante en otros modulos.
+
+Analogia: es como el corrector ortografico de un procesador de texto,
+pero en vez de buscar faltas de ortografia busca datos de futbol
+americano que no tienen sentido (formaciones inventadas, yardas
+imposibles, playbooks demasiado llenos, etc.)
+"""
+
 import logging
 
 from models import Formation, PlayType
@@ -32,12 +45,17 @@ class MotorAlertas:
     def __init__(self):
         """Inicializa el motor de alertas con el registro vacio."""
 
-        # Lista donde se guardan todas las alertas generadas
+        # Lista donde se guardan todas las alertas generadas durante
+        # la sesion actual (se acumulan, no se sobreescriben)
         self._registro_alertas = []
 
-        # Reglas de validacion disponibles
+        # Reglas de validacion disponibles.
         # Cada regla es una funcion que recibe una jugada y devuelve
-        # un mensaje de alerta o None si no hay problema
+        # un mensaje de alerta (string) si encuentra un problema,
+        # o None si la jugada esta bien. Tenerlas en una lista permite
+        # recorrerlas todas con un simple bucle en evaluar_jugada(),
+        # en lugar de escribir un if por cada regla cada vez que se
+        # evalua una jugada.
         self._reglas_jugada = [
             self._regla_formacion_invalida,
             self._regla_tipo_invalido,
@@ -62,16 +80,22 @@ class MotorAlertas:
 
         alertas_jugada = []
 
+        # Recorremos todas las reglas definidas en __init__ y ejecutamos
+        # cada una sobre la jugada. Si una regla devuelve un mensaje
+        # (en vez de None), significa que encontro un problema.
         for regla in self._reglas_jugada:
             alerta = regla(jugada)
             if alerta:
                 alertas_jugada.append(alerta)
 
-                # Guardar la alerta en el registro
+                # Guardar la alerta en el registro con el nombre de la
+                # jugada incluido, para saber a que jugada pertenece
+                # cuando se revise el registro mas tarde
                 mensaje_completo = f"[ALERTA] Jugada '{jugada.nombre}': {alerta}"
                 self._registro_alertas.append(mensaje_completo)
 
-                # Mostrar la alerta en consola
+                # Mostrar la alerta en consola para que el usuario la
+                # vea inmediatamente, ademas de quedar guardada en logs
                 print(mensaje_completo)
                 logger.warning(mensaje_completo)
 
@@ -93,7 +117,10 @@ class MotorAlertas:
 
         alertas_playbook = []
 
-        # Verificar si el playbook esta lleno o cerca del limite
+        # Verificar si el playbook esta lleno o cerca del limite.
+        # Usamos dos niveles: ALERTA cuando ya esta lleno (no se puede
+        # agregar nada mas) y AVISO cuando esta al 90% o mas (para que
+        # el usuario se prepare antes de quedarse sin espacio)
         total_jugadas = len(playbook.jugadas)
 
         if total_jugadas >= LIMITE_JUGADAS_PLAYBOOK:
@@ -114,7 +141,11 @@ class MotorAlertas:
             self._registro_alertas.append(f"[AVISO] {alerta}")
             print(f"[AVISO] {alerta}")
 
-        # Verificar si hay nombres de jugadas duplicados en el playbook
+        # Verificar si hay nombres de jugadas duplicados en el playbook.
+        # Convertimos todo a minusculas antes de comparar para que
+        # "HB Dive" y "hb dive" se consideren el mismo nombre duplicado.
+        # Usamos dos sets: uno para llevar registro de los nombres ya
+        # vistos, y otro para acumular los que resultaron duplicados.
         nombres_jugadas = [j.nombre.lower() for j in playbook.jugadas]
         nombres_vistos = set()
         nombres_duplicados = set()
@@ -133,7 +164,9 @@ class MotorAlertas:
             self._registro_alertas.append(f"[ALERTA] {alerta}")
             print(f"[ALERTA] {alerta}")
 
-        # Evaluar cada jugada individualmente
+        # Ademas de las verificaciones del playbook en si, evaluamos
+        # cada jugada individualmente con las reglas de evaluar_jugada()
+        # y juntamos todas las alertas en una sola lista de resultado
         for jugada in playbook.jugadas:
             alertas_jugada = self.evaluar_jugada(jugada)
             alertas_playbook.extend(alertas_jugada)
@@ -151,6 +184,9 @@ class MotorAlertas:
             Lista de strings con todas las alertas generadas.
         """
 
+        # Devolvemos una copia de la lista (list(...)) en vez de la
+        # lista original, para que quien reciba el resultado no pueda
+        # modificar el registro interno del motor por accidente
         return list(self._registro_alertas)
 
     def limpiar_registro(self):
@@ -160,6 +196,10 @@ class MotorAlertas:
         logger.info("Registro de alertas limpiado.")
 
     # --- Reglas de validacion individuales ---
+    # Cada una de estas funciones revisa UN solo aspecto de la jugada.
+    # Separarlas en funciones pequenas (en vez de un metodo gigante con
+    # muchos ifs) hace que sea facil anadir, quitar o testear una regla
+    # sin afectar a las demas.
 
     def _regla_formacion_invalida(self, jugada):
         """
@@ -199,12 +239,16 @@ class MotorAlertas:
             Mensaje de alerta o None si esta bien.
         """
 
+        # El campo de futbol americano mide 100 yardas, asi que ganar
+        # mas de 99 yardas en una sola jugada es practicamente imposible
         if jugada.yardas > 99:
             return (
                 f"Las yardas de la jugada son muy altas: {jugada.yardas}. "
                 "Una jugada de mas de 99 yardas es inusual."
             )
 
+        # Perder mas de 20 yardas en una sola jugada (por ejemplo, un
+        # sack muy grande) tambien es estadisticamente raro
         if jugada.yardas < -20:
             return (
                 f"Las yardas de la jugada son muy negativas: {jugada.yardas}. "
@@ -221,6 +265,8 @@ class MotorAlertas:
             Mensaje de alerta o None si esta bien.
         """
 
+        # La tasa de exito es un porcentaje expresado como decimal,
+        # por lo que matematicamente solo puede estar entre 0.0 y 1.0
         if jugada.tasa_exito < 0.0 or jugada.tasa_exito > 1.0:
             return (
                 f"Tasa de exito invalida: {jugada.tasa_exito}. "
@@ -236,6 +282,9 @@ class MotorAlertas:
             Mensaje de alerta o None si esta bien.
         """
 
+        # Lista de todas las situaciones de juego que el sistema
+        # reconoce como validas (down = intento, distance = yardas
+        # que faltan para conseguir un primer down)
         downs_validos = [
             "1st&10", "1st&goal",
             "2nd&long", "2nd&medium", "2nd&short", "2nd&goal",
