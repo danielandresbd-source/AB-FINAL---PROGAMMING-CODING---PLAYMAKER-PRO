@@ -2,24 +2,19 @@
 # tests/test_data_importer.py
 # Tests unitarios para data_importer.py (RF1)
 # Cubre los casos T01, T02, T03, T04, T05 del plan de testing
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
-import csv
-import os
-import sys
 import tempfile
 
+import os
 import pytest
 
 # Agregar el directorio raiz al path para importar modulos
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import data_importer
-from exceptions import ArchivoCsvError, ValidationError
 
-
-# --- Funciones de ayuda para los tests ---
+# Funciones de ayuda para los tests
 
 def crear_csv_temporal(contenido, encoding="utf-8"):
     """
@@ -37,12 +32,10 @@ def crear_csv_temporal(contenido, encoding="utf-8"):
     archivo_temporal.close()
     return archivo_temporal.name
 
-
 def eliminar_archivo(ruta):
     """Elimina un archivo temporal si existe."""
     if os.path.exists(ruta):
         os.unlink(ruta)
-
 
 # --- Tests T01: CSV valido ---
 
@@ -101,7 +94,6 @@ class TestCargarCsvValido:
         finally:
             eliminar_archivo(ruta)
 
-
 # --- Tests T02: CSV vacio ---
 
 class TestCargarCsvVacio:
@@ -121,7 +113,6 @@ class TestCargarCsvVacio:
             assert jugadas == []
         finally:
             eliminar_archivo(ruta)
-
 
 # --- Tests T03: Archivo no encontrado ---
 
@@ -147,7 +138,6 @@ class TestArchivoNoEncontrado:
             data_importer.cargar_csv(ruta_inexistente)
 
         assert ruta_inexistente in str(info_error.value)
-
 
 # --- Tests T04: Fila con datos invalidos ---
 
@@ -194,7 +184,6 @@ class TestValidarFilaConErrores:
             assert len(jugadas) == 1
         finally:
             eliminar_archivo(ruta)
-
 
 # --- Tests T05: Columnas extra ---
 

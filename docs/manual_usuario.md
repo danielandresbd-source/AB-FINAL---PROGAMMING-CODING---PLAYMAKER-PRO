@@ -1,6 +1,6 @@
 # Manual de Usuario — PlayMaker Pro
 
-**Proyecto:** AB Final — Programming & Coding | MSMK University College 2025–2026
+
 
 ---
 
@@ -131,15 +131,15 @@ python cli.py jugadas anadir \
 
 **Formaciones disponibles:**
 
-| Ofensivas | Defensivas |
-|---|---|
-| SHOTGUN | FOUR_THREE |
+| Ofensivas   | Defensivas |
+|    ---      |    ---     |
+| SHOTGUN     | FOUR_THREE |
 | I_FORMATION | THREE_FOUR |
-| SINGLEBACK | NICKEL |
-| GUN_TRIPS | DIME |
-| EMPTY_SET | |
-| PISTOL | |
-| WILDCAT | |
+| SINGLEBACK  | NICKEL     |
+| GUN_TRIPS   | DIME       |
+| EMPTY_SET   |            |
+| PISTOL      |            |
+| WILDCAT     |            |
 
 **Situaciones de down-and-distance validas:**
 `1st&10`, `1st&goal`, `2nd&long`, `2nd&medium`, `2nd&short`, `2nd&goal`,

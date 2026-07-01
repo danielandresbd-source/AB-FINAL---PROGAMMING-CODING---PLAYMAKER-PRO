@@ -1,22 +1,36 @@
 # ============================================================
 # simulator.py
 # RF10: Generador de datos sinteticos de jugadas para testing y demos
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
+
+"""
+Este modulo genera datos sinteticos (falsos pero realistas) de jugadas
+y playbooks de futbol americano.
+
+Por que existe este modulo?
+Porque para probar el resto de la aplicacion (analisis, alertas, reportes)
+se necesitan muchos datos de ejemplo, y escribirlos a mano uno por uno
+seria muy lento. Este modulo los genera automaticamente en cualquier
+cantidad, con valores realistas (yardas, formaciones, tasas de exito, etc.)
+en lugar de numeros aleatorios sin sentido.
+"""
 
 import csv
 import json
 import logging
 import os
 import random
-import uuid
 from datetime import datetime, timedelta
 
-from models import Formation, Play, Playbook, PlayType
+from models import Formation, Play, Playbook
 
 logger = logging.getLogger(__name__)
 
 # --- Datos de ejemplo para generar jugadas realistas ---
+# Estas listas son los "ingredientes" que combinamos al azar para crear
+# cada jugada sintetica. Estan basadas en terminologia real de futbol
+# americano para que los datos generados parezcan jugadas de verdad.
 
 # Nombres base para jugadas ofensivas de corrida
 NOMBRES_CORRIDA = [
@@ -71,13 +85,20 @@ def generar_jugadas(cantidad=10, tipo_ofensa=None):
         Lista de objetos Play generados aleatoriamente.
     """
 
+    # Caso limite: si piden 0 o menos jugadas, no tiene sentido generar nada.
+    # Devolvemos lista vacia en vez de lanzar un error, porque pedir 0
+    # jugadas no es realmente un error del usuario.
     if cantidad <= 0:
         logger.info("Se solicito generar 0 jugadas. Devolviendo lista vacia.")
         return []
 
     jugadas_generadas = []
 
-    # Definir que tipos de jugada se van a generar
+    # Definir que tipos de jugada se van a generar.
+    # Si el usuario pide un tipo especifico, generamos solo ese tipo.
+    # Si no especifica nada, mezclamos los tres tipos con una proporcion
+    # realista: en un partido real hay mas pases que corridas, y muy
+    # pocas jugadas especiales (patadas, punts).
     if tipo_ofensa == "run":
         tipos_disponibles = ["run"]
     elif tipo_ofensa == "pass":
@@ -85,22 +106,33 @@ def generar_jugadas(cantidad=10, tipo_ofensa=None):
     elif tipo_ofensa == "special_teams":
         tipos_disponibles = ["special_teams"]
     else:
-        # Por defecto: 50% pase, 40% corrida, 10% especiales
+        # Por defecto: 50% pase, 40% corrida, 10% especiales.
+        # Truco simple para pesos de probabilidad sin usar random.choices():
+        # repetimos cada tipo segun su peso y luego elegimos al azar
+        # de la lista resultante (5 "pass" + 4 "run" + 1 "special_teams").
         tipos_disponibles = (
             ["pass"] * 5 + ["run"] * 4 + ["special_teams"] * 1
         )
 
-    # Lista de formaciones disponibles
+    # Lista de todas las formaciones validas que existen en el sistema
+    # (la sacamos del Enum Formation para no tener que escribirlas a mano)
     todas_las_formaciones = [f.value for f in Formation]
 
-    # Fecha base para los timestamps (para que esten en orden cronologico)
+    # Fecha base para los timestamps. Restamos 'cantidad' dias para que,
+    # al ir sumando horas mas adelante, las jugadas queden ordenadas
+    # cronologicamente desde el pasado hasta el presente. Esto es
+    # importante para RF7 (prediccion), que necesita datos en orden.
     fecha_base = datetime.now() - timedelta(days=cantidad)
 
     for i in range(cantidad):
-        # Seleccionar un tipo de jugada aleatoriamente
+        # Seleccionar un tipo de jugada aleatoriamente de los disponibles
         tipo = random.choice(tipos_disponibles)
 
-        # Seleccionar el nombre segun el tipo
+        # Seleccionar el nombre base segun el tipo de jugada.
+        # Tambien definimos que formaciones tienen mas sentido para
+        # cada tipo: las corridas suelen usar formaciones con mas
+        # corredores (I_FORMATION), los pases formaciones abiertas
+        # (SHOTGUN, EMPTY_SET).
         if tipo == "run":
             nombre_base = random.choice(NOMBRES_CORRIDA)
             formaciones_preferidas = [
@@ -115,16 +147,26 @@ def generar_jugadas(cantidad=10, tipo_ofensa=None):
             nombre_base = random.choice(NOMBRES_ESPECIALES)
             formaciones_preferidas = todas_las_formaciones
 
-        # Agregar un numero al nombre para que sea unico
+        # Agregar un numero al nombre para que cada jugada generada
+        # tenga un nombre unico (evita duplicados exactos en el dataset)
         nombre = f"{nombre_base} {i + 1}"
 
-        # Elegir formacion con preferencia segun el tipo de jugada
+        # Elegir formacion: el 70% de las veces usamos una formacion
+        # "logica" para el tipo de jugada, y el 30% restante una
+        # formacion completamente aleatoria. Esto simula que en la
+        # realidad a veces los equipos usan formaciones poco comunes
+        # para sorprender al rival.
         if random.random() < 0.7 and formaciones_preferidas:
             formacion = random.choice(formaciones_preferidas)
         else:
             formacion = random.choice(todas_las_formaciones)
 
-        # Generar yardas realistas segun el tipo
+        # Generar yardas realistas segun el tipo de jugada.
+        # random.gauss(media, desviacion) genera una distribucion de
+        # campana (la mayoria de valores cerca de la media, pocos
+        # valores extremos), que se parece mas a estadisticas reales
+        # de futbol que random.uniform() (que da igual probabilidad
+        # a cualquier valor del rango).
         if tipo == "run":
             yardas = round(random.gauss(4.5, 3.0), 1)
         elif tipo == "pass":
@@ -132,23 +174,29 @@ def generar_jugadas(cantidad=10, tipo_ofensa=None):
         else:
             yardas = round(random.uniform(0, 50), 1)
 
-        # Generar tasa de exito aleatoria
+        # Generar tasa de exito aleatoria entre 30% y 85%
+        # (fuera de ese rango seria una jugada o demasiado mala o
+        # sospechosamente perfecta para ser realista)
         tasa_exito = round(random.uniform(0.3, 0.85), 2)
 
-        # Elegir down-distance aleatoriamente
+        # Elegir down-distance aleatoriamente de las situaciones posibles
         down_distance = random.choice(DOWNS_DISPONIBLES)
 
-        # Elegir hash position aleatoriamente
+        # Elegir en que parte del campo (hash) se ejecuta la jugada
         hash_position = random.choice(POSICIONES_HASH)
 
-        # Seleccionar 1 o 2 etiquetas aleatorias
+        # Seleccionar entre 0 y 2 etiquetas aleatorias sin repetir.
+        # random.sample() nunca repite elementos, a diferencia de
+        # random.choices(). El min() evita pedir mas etiquetas de
+        # las que existen en la lista (proteccion defensiva).
         num_etiquetas = random.randint(0, 2)
         etiquetas = random.sample(ETIQUETAS_POSIBLES, min(num_etiquetas, len(ETIQUETAS_POSIBLES)))
 
-        # Calcular la fecha de esta jugada (en orden cronologico)
+        # Calcular la fecha de esta jugada en concreto, sumando horas
+        # a la fecha base para mantener el orden cronologico
         fecha_jugada = fecha_base + timedelta(hours=i)
 
-        # Crear el objeto Play
+        # Crear el objeto Play con todos los datos generados
         jugada = Play(
             nombre=nombre,
             tipo=tipo,
@@ -181,6 +229,8 @@ def generar_playbooks(num_playbooks=2, jugadas_por_playbook=10):
         Lista de objetos Playbook generados con sus jugadas.
     """
 
+    # Nombres tematicos que suenan a playbooks reales de futbol americano,
+    # en vez de nombres genericos tipo "Playbook 1", "Playbook 2"
     nombres_playbooks = [
         "Red Zone Offense", "Two Minute Drill", "Short Yardage",
         "Third Down Package", "Opening Drive", "Goal Line Defense",
@@ -192,7 +242,9 @@ def generar_playbooks(num_playbooks=2, jugadas_por_playbook=10):
     playbooks_generados = []
 
     for i in range(num_playbooks):
-        # Elegir nombre del playbook
+        # Si pedimos mas playbooks que nombres tematicos disponibles,
+        # usamos los nombres de la lista mientras alcancen, y a partir
+        # de ahi generamos nombres genericos numerados para no repetir
         if i < len(nombres_playbooks):
             nombre = nombres_playbooks[i]
         else:
@@ -200,10 +252,12 @@ def generar_playbooks(num_playbooks=2, jugadas_por_playbook=10):
 
         tipo_ofensa = random.choice(tipos_ofensa)
 
-        # Crear el playbook
+        # Crear el playbook vacio primero
         playbook = Playbook(nombre=nombre, tipo_ofensa=tipo_ofensa)
 
-        # Generar y agregar jugadas al playbook
+        # Reutilizamos generar_jugadas() para llenar el playbook.
+        # Esto evita duplicar logica: la generacion de jugadas
+        # individuales ya esta resuelta arriba, aqui solo la usamos.
         jugadas = generar_jugadas(cantidad=jugadas_por_playbook)
         for jugada in jugadas:
             playbook.jugadas.append(jugada)
@@ -229,20 +283,27 @@ def guardar_dataset_json(playbooks, ruta_archivo=None):
         Ruta del archivo JSON guardado.
     """
 
+    # Si no se especifica una ruta, generamos un nombre automatico
+    # con la fecha y hora actual para que cada exportacion tenga
+    # un nombre unico y no se sobreescriban entre si
     if not ruta_archivo:
         fecha_hora = datetime.now().strftime("%Y%m%d_%H%M%S")
         ruta_archivo = os.path.join(
             "data", "exports", f"dataset_sintetico_{fecha_hora}.json"
         )
 
+    # Crear la carpeta de destino si no existe todavia
+    # (evita error si data/exports/ no se ha creado antes)
     os.makedirs(os.path.dirname(ruta_archivo), exist_ok=True)
 
+    # Empaquetamos los playbooks junto con metadatos de cuando se generaron
     datos = {
         "generado_en": datetime.now().isoformat(),
         "playbooks": [pb.a_diccionario() for pb in playbooks],
     }
 
     with open(ruta_archivo, "w", encoding="utf-8") as archivo:
+        # indent=2 hace el JSON legible por humanos para depuracion
         json.dump(datos, archivo, indent=2, ensure_ascii=False)
 
     logger.info(f"Dataset sintetico guardado en: '{ruta_archivo}'")
@@ -270,6 +331,7 @@ def guardar_dataset_csv(jugadas, ruta_archivo=None):
 
     os.makedirs(os.path.dirname(ruta_archivo), exist_ok=True)
 
+    # Columnas en el orden en que queremos que aparezcan en el CSV
     columnas = [
         "nombre", "tipo", "formacion", "descripcion",
         "yardas", "tasa_exito", "down_distance", "hash_position", "etiquetas",
@@ -281,7 +343,12 @@ def guardar_dataset_csv(jugadas, ruta_archivo=None):
 
         for jugada in jugadas:
             datos = jugada.a_diccionario()
+            # Solo escribimos las columnas que definimos arriba,
+            # ignorando cualquier campo extra que tenga el diccionario
             fila = {col: datos.get(col, "") for col in columnas}
+            # Las etiquetas son una lista en Python, pero CSV no soporta
+            # listas como valor de celda, asi que las unimos con ";"
+            # Ejemplo: ["red_zone", "power_run"] -> "red_zone;power_run"
             fila["etiquetas"] = ";".join(datos.get("etiquetas", []))
             escritor.writerow(fila)
 

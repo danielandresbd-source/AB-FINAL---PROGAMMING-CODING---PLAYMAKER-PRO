@@ -2,7 +2,7 @@
 
 **Football Playbook Creator and Analyzer**
 
-Proyecto Final — Programming & Coding | MSMK University College 2025–2026
+Proyecto Final — Programming & Coding 
 
 ---
 
@@ -288,6 +288,6 @@ Toda la documentacion tecnica detallada se encuentra en la carpeta `/docs/`:
 ---
 
 **Proyecto:** AB Final — Programming & Coding
-**Universidad:** MSMK University College
-**Curso:** 2025–2026
+**Universidad:** MSMK University
+**Curso:** 2026
 **Docente:** Dario Sanchez Tierno

@@ -231,11 +231,13 @@ def sanitizar_datos(jugadas):
             jugadas_validas.append(jugada)
         except ValidationError as error:
             logger.warning(
-                f"Jugada '{jugada.nombre}' eliminada durante sanitizacion: {error}"
+                f"Jugada '{jugada.nombre}' eliminada durante "
+                f"sanitizacion: {error}"
             )
 
     logger.info(
-        f"Sanitizacion completada: {len(jugadas_validas)} jugadas validas de {len(jugadas)} totales."
+        f"Sanitizacion completada: {len(jugadas_validas)} jugadas validas "
+        f"de {len(jugadas)} totales."
     )
 
     return jugadas_validas

@@ -1,7 +1,7 @@
 # ============================================================
 # exceptions.py
 # Excepciones personalizadas del sistema PlayMaker Pro
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
 

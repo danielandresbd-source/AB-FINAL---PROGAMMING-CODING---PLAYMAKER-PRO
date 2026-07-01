@@ -1,8 +1,22 @@
 # ============================================================
 # models.py
 # Clases de datos del dominio: Play, Playbook, Formation, PlayType
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
+
+"""
+Este modulo define las clases que representan el dominio del problema:
+el mundo del futbol americano.
+
+En programacion orientada a objetos, los "modelos" son las clases que
+representan los objetos principales del negocio. Aqui tenemos:
+
+- Formation y PlayType: enumeraciones (Enum) que limitan los valores
+  posibles a una lista cerrada, para evitar errores de tipeo como
+  escribir "SHOTGAN" en vez de "SHOTGUN".
+- Play: una jugada individual con todos sus atributos.
+- Playbook: una coleccion de jugadas con nombre y limite de capacidad.
+"""
 
 import uuid
 from datetime import datetime
@@ -15,6 +29,11 @@ from exceptions import ValidationError
 
 class Formation(str, Enum):
     """Formaciones ofensivas y defensivas validas en el sistema."""
+
+    # Heredar de (str, Enum) en vez de solo Enum permite comparar
+    # directamente Formation.SHOTGUN == "SHOTGUN" sin tener que escribir
+    # Formation.SHOTGUN.value == "SHOTGUN", lo cual simplifica el codigo
+    # en otros modulos que comparan strings contra estos valores.
 
     # Formaciones ofensivas
     SHOTGUN = "SHOTGUN"
@@ -35,6 +54,9 @@ class Formation(str, Enum):
 class PlayType(str, Enum):
     """Tipos de jugada disponibles en el sistema."""
 
+    # Los nombres en mayusculas (CORRIDA, PASE) son los identificadores
+    # del Enum en Python; los valores en minuscula ("run", "pass") son
+    # los que realmente se guardan y comparan en el resto del sistema
     CORRIDA = "run"
     PASE = "pass"
     ESPECIALES = "special_teams"
@@ -60,7 +82,10 @@ class Play:
         creada_en: Fecha y hora en que se creo la jugada
     """
 
-    # Situaciones de down-and-distance validas
+    # Situaciones de down-and-distance validas.
+    # Estas son constantes de clase (compartidas por todas las
+    # instancias de Play) en vez de variables de instancia, porque
+    # la lista de situaciones validas es la misma para cualquier jugada.
     DOWNS_VALIDOS = [
         "1st&10", "1st&goal",
         "2nd&long", "2nd&medium", "2nd&short", "2nd&goal",
@@ -87,7 +112,10 @@ class Play:
     ):
         """Inicializa una nueva jugada y valida sus datos."""
 
-        # Si no se pasa un ID, se genera uno automaticamente
+        # Si no se pasa un ID (por ejemplo, al crear una jugada nueva),
+        # se genera uno automaticamente con UUID. Si si se pasa un ID
+        # (por ejemplo, al reconstruir la jugada desde el JSON guardado),
+        # usamos ese para mantener la misma identidad
         self.id = play_id if play_id else "play_" + str(uuid.uuid4())[:8]
 
         self.nombre = nombre
@@ -98,6 +126,9 @@ class Play:
         self.tasa_exito = tasa_exito
         self.down_distance = down_distance
         self.hash_position = hash_position
+        # Si no se proporciona una lista de etiquetas, usamos lista vacia
+        # en vez de None, para que el resto del codigo pueda iterar sobre
+        # self.etiquetas sin tener que comprobar primero si es None
         self.etiquetas = etiquetas if etiquetas else []
         self.creada_en = creada_en if creada_en else datetime.now().isoformat()
 
@@ -108,30 +139,33 @@ class Play:
         Lanza ValidationError si hay algun dato invalido.
         """
 
-        # El nombre no puede estar vacio
+        # El nombre no puede estar vacio (ni ser solo espacios en blanco)
         if not self.nombre or not self.nombre.strip():
             raise ValidationError("El nombre de la jugada no puede estar vacio.")
 
-        # Las yardas no pueden ser un numero imposible
+        # Las yardas no pueden ser un numero fisicamente imposible.
+        # Usamos un rango amplio (-99 a 999) para dar margen a casos
+        # raros pero reales, sin permitir valores absurdos
         if self.yardas < -99 or self.yardas > 999:
             raise ValidationError(
                 f"Las yardas '{self.yardas}' estan fuera del rango permitido (-99 a 999)."
             )
 
-        # La tasa de exito debe estar entre 0.0 y 1.0
+        # La tasa de exito es un porcentaje expresado como decimal,
+        # asi que matematicamente solo puede estar entre 0.0 y 1.0
         if self.tasa_exito < 0.0 or self.tasa_exito > 1.0:
             raise ValidationError(
                 f"La tasa de exito '{self.tasa_exito}' debe estar entre 0.0 y 1.0."
             )
 
-        # El tipo debe ser uno de los permitidos
+        # El tipo debe ser uno de los valores definidos en el Enum PlayType
         tipos_validos = [t.value for t in PlayType]
         if self.tipo not in tipos_validos:
             raise ValidationError(
                 f"El tipo '{self.tipo}' no es valido. Opciones: {tipos_validos}"
             )
 
-        # La formacion debe ser una de las permitidas
+        # La formacion debe ser una de las definidas en el Enum Formation
         formaciones_validas = [f.value for f in Formation]
         if self.formacion not in formaciones_validas:
             raise ValidationError(
@@ -148,6 +182,11 @@ class Play:
         Este metodo hace una comprobacion basica. El analisis completo
         se hace en analyzer.py con el contexto del dataset completo.
         """
+
+        # Esta es una verificacion rapida sin contexto: solo mira la
+        # jugada en aislamiento. analyzer.py hace una version mas
+        # completa que compara la jugada contra el resto del dataset
+        # (por ejemplo, detectando outliers estadisticos con Z-score)
 
         # Tasa de exito imposible
         if self.tasa_exito < 0.0 or self.tasa_exito > 1.0:
@@ -184,6 +223,10 @@ class Play:
     def desde_diccionario(cls, datos):
         """Crea un objeto Play a partir de un diccionario (leido del JSON)."""
 
+        # @classmethod permite llamar a este metodo directamente sobre
+        # la clase (Play.desde_diccionario(...)) sin necesitar primero
+        # una instancia ya creada. Es el patron estandar para construir
+        # objetos a partir de datos externos (JSON, CSV, APIs, etc.)
         return cls(
             play_id=datos.get("id"),
             nombre=datos.get("nombre", ""),
@@ -200,6 +243,9 @@ class Play:
 
     def __repr__(self):
         """Representacion de la jugada como texto para depuracion."""
+        # __repr__ define como se muestra el objeto cuando lo imprimes
+        # o lo inspeccionas en la consola (por ejemplo con print(jugada)
+        # o simplemente escribiendo "jugada" en una sesion interactiva)
         return f"Play(id={self.id}, nombre={self.nombre}, tipo={self.tipo})"
 
 
@@ -220,7 +266,9 @@ class Playbook:
         actualizado_en: Fecha y hora de la ultima modificacion
     """
 
-    # Limite maximo de jugadas por playbook (segun RF6)
+    # Limite maximo de jugadas por playbook (segun RF6).
+    # Definirlo como constante de clase facilita cambiarlo en un solo
+    # sitio si en el futuro se decide subir o bajar el limite
     LIMITE_JUGADAS = 50
 
     def __init__(
@@ -233,7 +281,9 @@ class Playbook:
     ):
         """Inicializa un nuevo playbook."""
 
-        # Si no se pasa un ID, se genera uno automaticamente
+        # Mismo patron que en Play: si no se pasa un ID, se genera uno
+        # nuevo; si se pasa (por ejemplo, al reconstruir desde el JSON),
+        # se conserva el original
         self.id = playbook_id if playbook_id else "pb_" + str(uuid.uuid4())[:8]
 
         self.nombre = nombre
@@ -249,7 +299,10 @@ class Playbook:
         Lanza PlaybookFullError si ya hay 50 jugadas.
         """
 
-        # Importacion local para evitar importaciones circulares
+        # Importacion local (dentro de la funcion, no al principio del
+        # archivo) para evitar importaciones circulares: exceptions.py
+        # no necesita importar nada de models.py, asi que importamos
+        # PlaybookFullError aqui solo cuando realmente se necesita
         from exceptions import PlaybookFullError
 
         if len(self.jugadas) >= self.LIMITE_JUGADAS:
@@ -259,6 +312,9 @@ class Playbook:
             )
 
         self.jugadas.append(jugada)
+        # Actualizamos la fecha de modificacion cada vez que cambia
+        # el contenido del playbook, para llevar un registro de
+        # cuando fue la ultima vez que se toco
         self.actualizado_en = datetime.now().isoformat()
 
     def eliminar_jugada(self, play_id):
@@ -270,6 +326,8 @@ class Playbook:
 
         from exceptions import PlayNotFoundError
 
+        # Buscamos la jugada exacta antes de intentar eliminarla,
+        # porque list.remove() necesita el objeto exacto, no solo el ID
         jugada_encontrada = None
         for jugada in self.jugadas:
             if jugada.id == play_id:
@@ -310,6 +368,8 @@ class Playbook:
             "tipo_ofensa": self.tipo_ofensa,
             "creado_en": self.creado_en,
             "actualizado_en": self.actualizado_en,
+            # Convertimos tambien cada jugada individual a diccionario,
+            # ya que json.dump() no sabe serializar objetos Play directamente
             "jugadas": [jugada.a_diccionario() for jugada in self.jugadas],
         }
 
@@ -325,7 +385,8 @@ class Playbook:
             actualizado_en=datos.get("actualizado_en"),
         )
 
-        # Cargar las jugadas del playbook
+        # Cargar las jugadas del playbook: cada diccionario de jugada
+        # se convierte de vuelta a un objeto Play y se anade a la lista
         for datos_jugada in datos.get("jugadas", []):
             jugada = Play.desde_diccionario(datos_jugada)
             playbook.jugadas.append(jugada)

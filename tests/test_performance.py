@@ -3,23 +3,15 @@
 # Tests de rendimiento (T25)
 # Verifica que el sistema cumple el requisito NF1:
 # procesar 10.000 jugadas en menos de 3 segundos
-# Proyecto: AB Final - Programming & Coding - MSMK 2025-2026
+# Proyecto: AB Final - Programming & Coding
 # ============================================================
 
-import os
-import sys
-import tempfile
 import time
 import csv
-
-import pytest
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import analyzer
 import data_importer
 import simulator
-
 
 # --- Test T25: Rendimiento con 10.000 jugadas ---
 
@@ -95,7 +87,7 @@ class TestRendimiento:
         # Medir el tiempo de deteccion de anomalias
         tiempo_inicio = time.time()
 
-        anomalias = analyzer.detectar_anomalias(jugadas)
+        analyzer.detectar_anomalias(jugadas)
 
         tiempo_total = time.time() - tiempo_inicio
 
