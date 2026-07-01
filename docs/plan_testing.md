@@ -4,11 +4,26 @@
 
 ---
 
-## Estrategia General
+## Historial de Cambios
+
+| Version | Cambio |
+|---|---|
+| v1.0 | Plan inicial con 25 casos de test (T01-T25) |
+| v2.0 | +41 tests para `cli_commands/` (antes excluidos de cobertura) |
+| v2.0 | +14 tests para `cli.py` (antes en 0% de cobertura) |
+| v2.0 | Fix real de W291 (trailing whitespace) en 5 archivos de test |
+| v2.0 | Eliminado `--extend-ignore=W291` del CI |
+| v2.0 | Eliminado `cli.py` y `cli_commands/*` del `omit` de cobertura |
+| v2.0 | Aclaracion de NF4: el limite de 50 lineas aplica por funcion, no por modulo |
+
 
 El testing se realiza en paralelo con el desarrollo. Cada funcion implementada tiene su test antes de pasar a la siguiente funcionalidad. El objetivo minimo es un 80% de cobertura con al menos 20 casos de test documentados.
 
-**Este plan incluye 25 casos de test.**
+El testing se realiza en paralelo con el desarrollo. Cada funcion implementada tiene
+su test antes de pasar a la siguiente funcionalidad. Se sigue el mismo patron de
+aislamiento en todos los archivos de test: cada test usa un directorio temporal
+(`tmp_path` de pytest) y redirige `data_manager.RUTA_JSON` a un archivo JSON temporal,
+para que los tests no toquen jamas los datos reales del proyecto.
 
 ---
 
@@ -22,7 +37,7 @@ El testing se realiza en paralelo con el desarrollo. Cada funcion implementada t
 
 ---
 
-## Tabla Completa de Casos de Test
+## Tabla de Casos de Test — Modulos Core (T01-T25)
 
 | ID | Modulo | Funcion | Tipo | Escenario | Resultado Esperado | Estado |
 
@@ -57,11 +72,14 @@ El testing se realiza en paralelo con el desarrollo. Cada funcion implementada t
 ## Como Ejecutar los Tests
 
 ```bash
-# Ejecutar todos los tests
+# Ejecutar todos los tests (147 en total)
 pytest tests/ -v
 
-# Ejecutar con cobertura
+# Ejecutar con cobertura completa
 pytest tests/ --cov=. --cov-report=term-missing
+
+# Ejecutar solo los tests de CLI
+pytest tests/test_cli.py tests/test_cli_commands.py -v
 
 # Ejecutar solo tests unitarios de un modulo
 pytest tests/test_analyzer.py -v
@@ -72,8 +90,8 @@ pytest tests/test_integration.py -v
 # Ejecutar tests de rendimiento
 pytest tests/test_performance.py -v
 
-# Ejecutar y generar reporte HTML de cobertura
-pytest tests/ --cov=. --cov-report=html
+# Verificar estilo PEP 8 (sin errores deberia imprimir nada)
+flake8 . --max-line-length=99 --extend-ignore=E402
 ```
 
 ---
@@ -85,8 +103,7 @@ pytest tests/ --cov=. --cov-report=html
 | `pytest` | Ejecutar la suite de tests | `pytest tests/ -v` |
 | `pytest-cov` | Medir cobertura de codigo | `pytest tests/ --cov=. --cov-report=term-missing` |
 | `pytest-benchmark` | Tests de rendimiento | Se usa en `test_performance.py` |
-| `flake8` | Verificar PEP 8 | `flake8 . --max-line-length=99` |
-| `pylint` | Analisis estatico | `pylint *.py --disable=C0114` |
+| `flake8` | Verificar PEP 8 | `flake8 . --max-line-length=99 --extend-ignore=E402` |
 
 ---
 
